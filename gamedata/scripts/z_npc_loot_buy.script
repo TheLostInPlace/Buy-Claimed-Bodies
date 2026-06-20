@@ -410,6 +410,12 @@ function npc_loot_buy_dialog:__init() super()
 	self:AddCallback("npc_loot_buy_msgbox", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnYes, self)
 	self:AddCallback("npc_loot_buy_msgbox", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnNo, self)
 	self.box:InitMessageBox("message_box_yes_no")
+
+	-- separate ok popup so a failed buy gives clear feedback, not just a PDA line
+	self.okbox = CUIMessageBoxEx()
+	self:Register(self.okbox, "npc_loot_buy_okbox")
+	self:AddCallback("npc_loot_buy_okbox", ui_events.MESSAGE_BOX_OK_CLICKED, self.OnOk, self)
+	self.okbox:InitMessageBox("message_box_ok")
 end
 
 function npc_loot_buy_dialog:Prompt(victim_id, seller_id, seller_name, seller_comm, price)
@@ -425,10 +431,23 @@ end
 
 function npc_loot_buy_dialog:OnYes()
 	dialog_open = false
+	local actor = db.actor
+	if actor and actor:money() < (self.price or 0) then
+		local seller = level.object_by_id(self.seller_id)
+		local msg = flavour("st_npc_loot_buy_poor_", POOR_N, tostring(self.price))
+		notify(msg, seller, true)   -- to the PDA only if that is on, nothing if off
+		self.okbox:SetText(msg)     -- always show the popup so it is clear
+		self.okbox:ShowDialog(true)
+		return
+	end
 	do_purchase(self.victim_id, self.seller_id, self.seller_comm, self.price)
 end
 
 function npc_loot_buy_dialog:OnNo()
+	dialog_open = false
+end
+
+function npc_loot_buy_dialog:OnOk()
 	dialog_open = false
 end
 
@@ -494,6 +513,16 @@ local function decide_loot(obj)
 	return "buy", seller, id
 end
 
+-- one use tap can fire the loot hook several times, throttle so the prompt or
+-- warning happens once per tap (the loot window is still blocked every time)
+local last_action = { id = nil, t = 0 }
+local function action_throttled(id)
+	local now = time_global()
+	if last_action.id == id and (now - last_action.t) < 500 then return true end
+	last_action.id, last_action.t = id, now
+	return false
+end
+
 local function do_loot_action(action, seller, obj, id)
 	if action == "buy" then
 		open_buy_dialog(id, seller, compute_price(id, obj, seller))
@@ -511,7 +540,7 @@ local function ui_loot_hook(mode, obj)
 	if mode == "loot" and obj then
 		local action, seller, id = decide_loot(obj)
 		if action then
-			do_loot_action(action, seller, obj, id)
+			if not action_throttled(id) then do_loot_action(action, seller, obj, id) end
 			return
 		end
 	end
@@ -523,7 +552,7 @@ local function ui_mutant_loot_hook(obj, ...)
 	if obj then
 		local action, seller, id = decide_loot(obj)
 		if action then
-			do_loot_action(action, seller, obj, id)
+			if not action_throttled(id) then do_loot_action(action, seller, obj, id) end
 			return
 		end
 	end
@@ -718,10 +747,17 @@ function on_game_start()
 		end
 	end
 
-	-- unregister a base claim mod's use handler so the two do not both block
+	-- take over a base claim mod's use handler. unregistering the event is not
+	-- enough because Interaction Dot Marks calls the global directly on each
+	-- interaction, which spams the claim warning. while our system is on we skip
+	-- it (our loot hook still blocks looting); when off we fall back to it
 	if grok_loot_claim and grok_loot_claim.on_before_key_press then
 		base_handler = grok_loot_claim.on_before_key_press
 		UnregisterScriptCallback("on_before_key_press", base_handler)
+		grok_loot_claim.on_before_key_press = function(...)
+			if get_cfg("enable") then return end
+			return base_handler(...)
+		end
 	end
 	if ui_inventory and ui_inventory.start then
 		base_ui_start = ui_inventory.start
