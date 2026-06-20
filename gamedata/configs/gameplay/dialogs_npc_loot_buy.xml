@@ -8,26 +8,63 @@
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
-				<text>npc_loot_buy_talk_offer_fallback</text>
-				<script_text>z_npc_loot_buy.dlg_offer_text</script_text>
-				<next>2</next>
-				<next>3</next>
+				<text>npc_loot_buy_talk_list</text>
+				<script_text>z_npc_loot_buy.dlg_list_header</script_text>
+				<next>101</next>
+				<next>102</next>
+				<next>103</next>
+				<next>104</next>
+				<next>105</next>
+				<next>106</next>
+				<next>200</next>
 			</phrase>
-			<phrase id="2">
-				<precondition>z_npc_loot_buy.dlg_can_buy</precondition>
-				<text>npc_loot_buy_talk_deal</text>
-				<action>z_npc_loot_buy.dlg_do_purchase</action>
-				<next>4</next>
+			<phrase id="101">
+				<text>npc_loot_buy_talk_body</text>
+				<precondition>dialogs.npc_loot_buy_avail_1</precondition>
+				<script_text>dialogs.npc_loot_buy_label_1</script_text>
+				<action>dialogs.npc_loot_buy_buy_1</action>
+				<next>1</next>
 			</phrase>
-			<phrase id="3">
-				<text>npc_loot_buy_talk_no</text>
-				<next>5</next>
+			<phrase id="102">
+				<text>npc_loot_buy_talk_body</text>
+				<precondition>dialogs.npc_loot_buy_avail_2</precondition>
+				<script_text>dialogs.npc_loot_buy_label_2</script_text>
+				<action>dialogs.npc_loot_buy_buy_2</action>
+				<next>1</next>
 			</phrase>
-			<phrase id="4">
-				<text>npc_loot_buy_talk_done_fallback</text>
-				<script_text>z_npc_loot_buy.dlg_done_text</script_text>
+			<phrase id="103">
+				<text>npc_loot_buy_talk_body</text>
+				<precondition>dialogs.npc_loot_buy_avail_3</precondition>
+				<script_text>dialogs.npc_loot_buy_label_3</script_text>
+				<action>dialogs.npc_loot_buy_buy_3</action>
+				<next>1</next>
 			</phrase>
-			<phrase id="5">
+			<phrase id="104">
+				<text>npc_loot_buy_talk_body</text>
+				<precondition>dialogs.npc_loot_buy_avail_4</precondition>
+				<script_text>dialogs.npc_loot_buy_label_4</script_text>
+				<action>dialogs.npc_loot_buy_buy_4</action>
+				<next>1</next>
+			</phrase>
+			<phrase id="105">
+				<text>npc_loot_buy_talk_body</text>
+				<precondition>dialogs.npc_loot_buy_avail_5</precondition>
+				<script_text>dialogs.npc_loot_buy_label_5</script_text>
+				<action>dialogs.npc_loot_buy_buy_5</action>
+				<next>1</next>
+			</phrase>
+			<phrase id="106">
+				<text>npc_loot_buy_talk_body</text>
+				<precondition>dialogs.npc_loot_buy_avail_6</precondition>
+				<script_text>dialogs.npc_loot_buy_label_6</script_text>
+				<action>dialogs.npc_loot_buy_buy_6</action>
+				<next>1</next>
+			</phrase>
+			<phrase id="200">
+				<text>npc_loot_buy_talk_thatsall</text>
+				<next>201</next>
+			</phrase>
+			<phrase id="201">
 				<text>npc_loot_buy_talk_bye</text>
 				<script_text>z_npc_loot_buy.dlg_bye_text</script_text>
 			</phrase>

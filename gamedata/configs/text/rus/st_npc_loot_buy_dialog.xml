@@ -62,4 +62,19 @@
 		<text>Сейчас мне нечего тебе продать.</text>
 	</string>
 
+	<string id="npc_loot_buy_talk_list">
+		<text>Выбирай, какой тебе нужен.</text>
+	</string>
+	<string id="npc_loot_buy_talk_list_more">
+		<text>Готово. Ещё кого-нибудь?</text>
+	</string>
+	<string id="npc_loot_buy_talk_list_empty">
+		<text>Это был последний.</text>
+	</string>
+	<string id="npc_loot_buy_talk_body">
+		<text>Тело.</text>
+	</string>
+	<string id="npc_loot_buy_talk_thatsall">
+		<text>Это всё, спасибо.</text>
+	</string>
 </string_table>

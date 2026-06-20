@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 
-	<!-- Player lines and static fallbacks (the NPC offer/result lines are
-	     generated dynamically in z_npc_loot_buy.script via <script_text>). -->
+	<!-- player lines and static fallbacks. the NPC lines are generated
+	     dynamically in z_npc_loot_buy.script via script_text -->
 	<string id="npc_loot_buy_talk_ask">
-		<text>That body you claimed, mind if I buy it off you?</text>
+		<text>Those kills of yours, mind if I buy some off you?</text>
+	</string>
+	<string id="npc_loot_buy_talk_list">
+		<text>Take your pick, friend. Which one are you after?</text>
+	</string>
+	<string id="npc_loot_buy_talk_list_more">
+		<text>Done. Anyone else catch your eye?</text>
+	</string>
+	<string id="npc_loot_buy_talk_list_empty">
+		<text>That was the last of them.</text>
+	</string>
+	<string id="npc_loot_buy_talk_body">
+		<text>A body.</text>
+	</string>
+	<string id="npc_loot_buy_talk_thatsall">
+		<text>That's all, thanks.</text>
 	</string>
 	<string id="npc_loot_buy_talk_deal">
 		<text>Deal. Here's your coin.</text>
@@ -22,7 +37,7 @@
 		<text>Pleasure doing business. It's all yours.</text>
 	</string>
 
-	<!-- NPC has no claimed body - faction-flavored "nothing to sell" lines -->
+	<!-- NPC has no claimed body, faction flavored nothing to sell lines -->
 	<string id="npc_loot_buy_nokill_stalker">
 		<text>Haven't got any fresh kills to sell, stalker. Try me another time.</text>
 	</string>

@@ -75,6 +75,10 @@
 	<string id="st_npc_loot_buy_someone">
 		<text>the stalker</text>
 	</string>
+	<!-- fallback name for an unnamed mutant in the talk to killer list -->
+	<string id="st_npc_loot_buy_mutant">
+		<text>Mutant</text>
+	</string>
 
 	<!-- Corpse prompt suffix shown by the Interaction Dot Marks patch -->
 	<string id="st_npc_loot_buy_bought">

@@ -21,6 +21,7 @@ local GEN_COUNT = { prompt = 6, done = 5 }
 local FAC_COUNT = { prompt = 2, done = 2 }
 local POOR_N = 4
 local GOTO_N = 5
+local MAX_SLOTS = 6 -- most bodies shown at once in the talk to killer list
 local FACTIONS = { -- factions with their own personality lines
 	stalker = true, bandit = true, dolg = true, freedom = true, csky = true,
 	killer = true, army = true, ecolog = true, monolith = true,
@@ -436,22 +437,6 @@ local function open_buy_dialog(victim_id, seller, price)
 	GUI:Prompt(victim_id, seller:id(), seller:character_name(), character_community(seller), price)
 end
 
--- which claimed body belongs to a given NPC
-local function body_claimed_by(npc_id)
-	if pending_body and claim_killer(pending_body) == npc_id then
-		return pending_body
-	end
-	for vid, kid in pairs(claims) do
-		if kid == npc_id then return vid end
-	end
-	if grok_loot_claim and grok_loot_claim.claimed then
-		for vid, kid in pairs(grok_loot_claim.claimed) do
-			if kid == npc_id then return vid end
-		end
-	end
-	return nil
-end
-
 -- interaction handlers, self contained, work with or without a base claim mod
 
 -- free loot a claimed body while the claimer is too far to stop you, with a
@@ -545,28 +530,15 @@ local function ui_mutant_loot_hook(obj, ...)
 	if base_mutant_start then return base_mutant_start(obj, ...) end
 end
 
--- use on a living NPC, talk to killer mode only
-local function handle_npc_use(npc, flags)
-	if npc:has_info("npcx_is_companion") then return false end
+-- dialogue for talk to killer mode. lists every body this NPC has claimed as
+-- "name, rank (price RU)". you pick one, it gets bought, and the menu loops back
+-- so you can buy several without reopening. the per body options are registered
+-- as dialogs.npc_loot_buy_* closures in on_game_start, one set per slot
 
-	local vid = body_claimed_by(npc:id())
-	if not vid then return false end
-
-	if faction_refuses(character_community(npc)) then return false end
-
-	local victim_obj = level.object_by_id(vid)
-	pending_body = nil
-	flags.ret_value = false
-	open_buy_dialog(vid, npc, compute_price(vid, victim_obj, npc))
-	return true
-end
-
--- dialogue for talk to killer mode. one self contained dialogue, the NPC offer
--- line is built dynamically via <script_text> and the purchase happens inside
--- the dialogue. functions are referenced from dialogs_npc_loot_buy.xml as
--- z_npc_loot_buy.<name>
-
-local dlg_cache = {} -- [npc_id] = { vid, price, offer, done }, stable per conversation
+local dlg_lists = {}  -- [npc_id] = ordered body entries, built per conversation
+local dlg_last_id     -- npc whose last purchase result the hub line should report
+local dlg_last_ok     -- true bought, false too poor, nil nothing bought yet
+local dlg_last_price
 
 local function faction_nokill_line(comm)
 	local id = (comm and FACTIONS[comm]) and ("npc_loot_buy_nokill_" .. comm)
@@ -574,63 +546,117 @@ local function faction_nokill_line(comm)
 	return game.translate_string(id)
 end
 
--- build and cache this NPC's offer and result lines, flavor variant rolled once
-local function build_dlg(npc)
-	local id = npc:id()
-	local c = dlg_cache[id]
-	if c then return c end
-	c = {}
-	local vid = body_claimed_by(id)
-	local comm = character_community(npc)
-	if vid then
-		c.vid = vid
-		c.price = compute_price(vid, level.object_by_id(vid), npc)
-		c.offer = faction_flavour("prompt", comm, npc:character_name(), tostring(c.price))
-	else
-		c.offer = faction_nokill_line(comm)
+local function rank_word(rname)
+	if not rname or rname == "" then return nil end
+	return rname:sub(1, 1):upper() .. rname:sub(2)
+end
+
+-- "Name, Rank (price RU)" for a stalker, "Name (price RU)" for a mutant
+local function body_label(e)
+	local price = tostring(e.price)
+	if e.mutant then
+		local nm = (e.name ~= "" and e.name) or game.translate_string("st_npc_loot_buy_mutant")
+		return strformat("%s (%s RU)", nm, price)
 	end
-	c.done = faction_flavour("done", comm, npc:character_name())
-	dlg_cache[id] = c
-	return c
+	local nm = (e.name ~= "" and e.name) or game.translate_string("st_npc_loot_buy_someone")
+	local rk = rank_word(e.rname)
+	if rk then return strformat("%s, %s (%s RU)", nm, rk, price) end
+	return strformat("%s (%s RU)", nm, price)
+end
+
+local function build_entry(vid, npc)
+	local vobj = level.object_by_id(vid)
+	local info = victim_info[vid] or {}
+	local mut = info.mutant
+	if mut == nil and vobj then mut = IsMonster(vobj) end
+	return {
+		vid    = vid,
+		price  = compute_price(vid, vobj, npc),
+		mutant = mut,
+		rname  = info.rname or (vobj and vobj.rank_name and vobj:rank_name()) or nil,
+		name   = info.name or (vobj and vobj:character_name()) or "",
+	}
+end
+
+-- ordered list of the bodies this NPC has claimed, capped at MAX_SLOTS
+local function ordered_bodies(npc)
+	local npc_id = npc:id()
+	local seen, out = {}, {}
+	local function add(vid, kid)
+		if kid ~= npc_id or seen[vid] then return end
+		seen[vid] = true
+		out[#out + 1] = build_entry(vid, npc)
+	end
+	for vid, kid in pairs(claims) do add(vid, kid) end
+	if grok_loot_claim and grok_loot_claim.claimed then
+		for vid, kid in pairs(grok_loot_claim.claimed) do add(vid, kid) end
+	end
+	while #out > MAX_SLOTS do table.remove(out) end
+	return out
+end
+
+local function ensure_list(npc)
+	if not npc then return nil end
+	local id = npc:id()
+	if not dlg_lists[id] then dlg_lists[id] = ordered_bodies(npc) end
+	return dlg_lists[id]
+end
+
+-- per slot functors, wrapped into the dialogs table in on_game_start so each
+-- closure carries its own slot index
+local function slot_available(a, b, n)
+	local list = ensure_list(dialogs.who_is_npc(a, b))
+	return list ~= nil and list[n] ~= nil
+end
+
+local function slot_label(a, b, n)
+	local list = ensure_list(dialogs.who_is_npc(a, b))
+	local e = list and list[n]
+	return e and body_label(e) or ""
+end
+
+local function slot_buy(a, b, n)
+	local npc = dialogs.who_is_npc(a, b)
+	if not npc then return end
+	local list = ensure_list(npc)
+	local e = list and list[n]
+	if not e then return end
+	local id = npc:id()
+	dlg_last_ok = do_purchase(e.vid, id, character_community(npc), e.price, true)
+	dlg_last_id, dlg_last_price = id, e.price
+	dlg_lists[id] = nil  -- rebuild on the way back to the hub so the bought body drops off
 end
 
 function dlg_available()
 	return get_cfg("enable") and (tonumber(get_cfg("interact_mode")) or 0) == 1
 end
 
-function dlg_offer_text(s1, s2)
-	local npc = dialogs.who_is_npc(s1, s2)
-	return (npc and build_dlg(npc).offer) or ""
+-- the NPC hub line: the prompt, a result after a buy, or a no kills line
+function dlg_list_header(a, b)
+	local npc = dialogs.who_is_npc(a, b)
+	if not npc then return "" end
+	local id = npc:id()
+	local list = ensure_list(npc)
+	if (not list) or #list == 0 then
+		if dlg_last_id == id and dlg_last_ok == true then
+			return game.translate_string("npc_loot_buy_talk_list_empty")
+		end
+		return faction_nokill_line(character_community(npc))
+	end
+	if dlg_last_id == id and dlg_last_ok ~= nil then
+		if dlg_last_ok then return game.translate_string("npc_loot_buy_talk_list_more") end
+		return flavour("st_npc_loot_buy_poor_", POOR_N, tostring(dlg_last_price or 0))
+	end
+	return game.translate_string("npc_loot_buy_talk_list")
 end
 
-function dlg_done_text(s1, s2)
-	local npc = dialogs.who_is_npc(s1, s2)
-	return (npc and build_dlg(npc).done) or ""
-end
-
-function dlg_bye_text(s1, s2)
+function dlg_bye_text(a, b)
 	return game.translate_string("npc_loot_buy_talk_bye")
 end
 
--- "Deal" shows only if this NPC has a claim and the actor can pay
-function dlg_can_buy(first, second)
-	local npc = dialogs.who_is_npc(first, second)
-	if not npc then return false end
-	local c = build_dlg(npc)
-	return c.vid ~= nil and db.actor ~= nil and db.actor:money() >= (c.price or 0)
-end
-
-function dlg_do_purchase(first, second)
-	local npc = dialogs.who_is_npc(first, second)
-	if not npc then return end
-	local c = dlg_cache[npc:id()]
-	if not (c and c.vid) then return end
-	do_purchase(c.vid, npc:id(), character_community(npc), c.price, true)
-	dlg_cache[npc:id()] = nil
-end
-
 function on_actor_leave_dialog()
-	dlg_cache = {}
+	dlg_lists = {}
+	dlg_last_id, dlg_last_ok, dlg_last_price = nil, nil, nil
 end
 
 -- death recorder, store rank for humans or tier for mutants plus the level so a
@@ -647,7 +673,7 @@ function on_npc_death(victim, killer)
 
 	claims[vid] = kid
 	local is_mut = IsMonster(victim)
-	local rec = { mutant = is_mut, lvl = level.name() }
+	local rec = { mutant = is_mut, lvl = level.name(), name = (victim.character_name and victim:character_name()) or "" }
 	if is_mut then
 		rec.tier = mutant_tier(victim)
 	else
@@ -682,6 +708,16 @@ function load_state(m_data)
 end
 
 function on_game_start()
+	-- expose one set of dialogue functors per body slot
+	if dialogs then
+		for i = 1, MAX_SLOTS do
+			local n = i
+			dialogs["npc_loot_buy_avail_" .. n] = function(a, b) return slot_available(a, b, n) end
+			dialogs["npc_loot_buy_label_" .. n] = function(a, b) return slot_label(a, b, n) end
+			dialogs["npc_loot_buy_buy_"   .. n] = function(a, b) return slot_buy(a, b, n) end
+		end
+	end
+
 	-- unregister a base claim mod's use handler so the two do not both block
 	if grok_loot_claim and grok_loot_claim.on_before_key_press then
 		base_handler = grok_loot_claim.on_before_key_press
