@@ -1,0 +1,51 @@
+-- fallback corpse status label, used only when Interaction Dot Marks is absent.
+-- shows (Claimed), (Bought) or (Stolen) as a brief on screen line while the
+-- crosshair is on such a corpse, so the buy system keeps a quick read on a bare
+-- install. off when Dot Marks is present since it draws the world labels
+
+local THROTTLE  = 250  -- ms between crosshair checks
+local REFRESH   = 5000 -- ms before showing the same corpse again
+local SHOW_TIME = 5    -- seconds the line stays up
+
+local next_check = 0
+local last_id    = nil
+local last_show  = 0
+
+local function corpse_name(obj)
+	if IsStalker(obj) then
+		return obj:character_name() or ""
+	end
+	local sec = obj:section()
+	return (sec and game.translate_string(sec)) or ""
+end
+
+local function on_update()
+	if not (db.actor and z_npc_loot_buy and z_npc_loot_buy.corpse_label_suffix) then return end
+
+	local tg = time_global()
+	if tg < next_check then return end
+	next_check = tg + THROTTLE
+
+	if not (z_npc_loot_buy.is_enabled and z_npc_loot_buy.is_enabled()) then last_id = nil; return end
+
+	local obj = level.get_target_obj()
+	if not obj or obj:alive() or not (IsStalker(obj) or IsMonster(obj)) then last_id = nil; return end
+
+	local id = obj:id()
+	local suffix = z_npc_loot_buy.corpse_label_suffix(id)
+	if not suffix then last_id = nil; return end
+
+	-- show on target change, refresh periodically while you keep looking
+	if id ~= last_id or (tg - last_show) > REFRESH then
+		local nm = corpse_name(obj)
+		local text = (nm ~= "") and (nm .. suffix) or (suffix:gsub("^%s+", ""))
+		actor_menu.set_msg(1, text, SHOW_TIME)
+		last_id = id
+		last_show = tg
+	end
+end
+
+function on_game_start()
+	if ui_hud_dotmarks then return end -- Dot Marks renders the labels itself
+	RegisterScriptCallback("actor_on_update", on_update)
+end

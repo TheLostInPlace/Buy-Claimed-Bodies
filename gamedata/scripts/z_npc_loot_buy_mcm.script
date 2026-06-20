@@ -1,0 +1,64 @@
+-- MCM configuration. falls back to defaults below if MCM is not installed
+
+local defaults = {
+	enable          = true,    -- master switch for the buy feature
+	interact_mode   = 0,       -- 0 is prompt at the body, 1 is talk to the killer NPC
+	base_price      = 2500,    -- baseline RU before modifiers
+	min_price       = 100,     -- price floor
+	rank_weight     = 1.0,     -- how strongly a human body's rank scales price, 0 ignores it
+	mutant_weight   = 1.0,     -- how strongly a mutant's difficulty scales price, 0 ignores it
+	location_weight = 1.0,     -- how strongly the kill's map danger scales price, 0 ignores it
+	location_humans = false,   -- also apply map danger to human bodies, not just mutants
+	rep_divisor     = 2000,    -- larger means your reputation matters less to the price
+	rep_cap         = 0.5,     -- max discount or surcharge from reputation, 0.5 is plus or minus 50%
+	random_spread   = 0.15,    -- random jitter on the final price, 0.15 is plus or minus 15%
+	enemy_threshold = -1000,   -- at or below this faction goodwill they refuse to sell
+	max_dist        = 25,      -- how close the claiming NPC must be to deal, in meters
+	loot_when_far     = false, -- beyond max_dist, loot the body for free instead of buying
+	alert_on_far_loot = false, -- free looting may turn nearby faction members hostile
+	alert_chance      = 0.5,   -- chance that free looting alerts the faction, 0 to 1
+	alert_radius      = 30,    -- how close faction members must be to be alerted, in meters
+	pda_notify        = true,  -- show buy, steal and interact messages as PDA notifications
+	debug             = false, -- write diagnostics to appdata\logs\npc_loot_buy_dbg.log
+}
+
+function get_config(key)
+	if ui_mcm then
+		return ui_mcm.get("npc_loot_buy/" .. key)
+	end
+	return defaults[key]
+end
+
+function on_mcm_load()
+	local op = {
+		id = "npc_loot_buy", sh = true, gr = {
+			{ id = "desc1", type = "desc", text = "ui_mcm_npc_loot_buy_desc1" },
+			{ id = "enable", type = "check", val = 1, def = true },
+			{ id = "interact_mode", type = "radio_h", val = 2, def = 0, content = {
+				{ 0, "npc_loot_buy_at_body" },
+				{ 1, "npc_loot_buy_at_npc" },
+			} },
+
+			{ id = "base_price",      type = "track", val = 2, min = 0,      max = 50000, step = 100, def = 2500 },
+			{ id = "min_price",       type = "track", val = 2, min = 0,      max = 10000, step = 50,  def = 100 },
+			{ id = "rank_weight",     type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
+			{ id = "mutant_weight",   type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
+			{ id = "location_weight", type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
+			{ id = "location_humans", type = "check", val = 1, def = false },
+			{ id = "rep_divisor",     type = "track", val = 2, min = 100,    max = 10000, step = 100, def = 2000 },
+			{ id = "rep_cap",         type = "track", val = 2, min = 0,      max = 0.9,   step = 0.05, def = 0.5 },
+			{ id = "random_spread",   type = "track", val = 2, min = 0,      max = 0.5,   step = 0.05, def = 0.15 },
+			{ id = "enemy_threshold", type = "track", val = 2, min = -10000, max = 0,     step = 250, def = -1000 },
+			{ id = "max_dist",        type = "track", val = 2, min = 5,      max = 50,    step = 1,   def = 25 },
+
+			{ id = "loot_when_far",     type = "check", val = 1, def = false },
+			{ id = "alert_on_far_loot", type = "check", val = 1, def = false },
+			{ id = "alert_chance",      type = "track", val = 2, min = 0, max = 1,   step = 0.05, def = 0.5 },
+			{ id = "alert_radius",      type = "track", val = 2, min = 5, max = 100, step = 5,    def = 30 },
+
+			{ id = "pda_notify",        type = "check", val = 1, def = true },
+			{ id = "debug",             type = "check", val = 1, def = false },
+		}
+	}
+	return op
+end

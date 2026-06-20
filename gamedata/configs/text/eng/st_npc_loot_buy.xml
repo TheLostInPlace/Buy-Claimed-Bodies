@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+	<!-- ====================================================================
+	     GENERIC buy prompt (fallback / unlisted factions).
+	     %s = seller name, %s = price
+	     ==================================================================== -->
+	<string id="st_npc_loot_buy_prompt_1">
+		<text>%s spits to the side. 'This one is mine, stalker. You want it? %s RU. Nu, yes or no?'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_2">
+		<text>%s looks you over. 'Pay %s RU and the body is yours. Nothing personal.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_3">
+		<text>'Too many scavengers in the Zone,' mutters %s. 'Give me %s RU and dig through it yourself.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_4">
+		<text>%s keeps a hand on his rifle. 'I put it down, so it is mine. For %s RU, I did not see you.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_5">
+		<text>'Everything has its price out here,' says %s. 'Hand over %s RU and the body is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_6">
+		<text>%s shrugs. 'The Zone takes, the Zone gives. %s RU, and I saw nothing.'</text>
+	</string>
+
+	<!-- GENERIC deal closed.  %s = seller name -->
+	<string id="st_npc_loot_buy_done_1">
+		<text>%s takes the money and nods. 'Good. It is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_2">
+		<text>'Wise,' says %s, stepping aside. The body is yours now.</text>
+	</string>
+	<string id="st_npc_loot_buy_done_3">
+		<text>%s counts the notes once. 'Yours. Do not make a habit of it.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_4">
+		<text>The deal is done. %s nods toward the body.</text>
+	</string>
+	<string id="st_npc_loot_buy_done_5">
+		<text>%s tucks the roubles away. 'Go on, take what you need.'</text>
+	</string>
+
+	<!-- ==== Can't afford it.  %s = price ==== -->
+	<string id="st_npc_loot_buy_poor_1">
+		<text>You cannot put together the %s RU.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_2">
+		<text>Not enough roubles on you for this.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_3">
+		<text>'Come back when you have the %s RU,' he says, turning away.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_4">
+		<text>Your pockets are too empty for this deal.</text>
+	</string>
+
+	<!-- ==== Talk-to-killer hint at the body.  %s = seller name ==== -->
+	<string id="st_npc_loot_buy_goto_1">
+		<text>This kill belongs to %s. Go and speak with them if you want it.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_2">
+		<text>Someone already claimed this one. Find %s and make an offer.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_3">
+		<text>%s brought this one down. You will have to deal with them.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_4">
+		<text>Not yours to take. Find %s and talk it over.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_5">
+		<text>This one is spoken for. Best go and ask %s.</text>
+	</string>
+
+	<string id="st_npc_loot_buy_someone">
+		<text>the stalker</text>
+	</string>
+
+	<!-- Corpse prompt suffix shown by the Interaction Dot Marks patch -->
+	<string id="st_npc_loot_buy_bought">
+		<text>Bought</text>
+	</string>
+	<string id="st_npc_loot_buy_stolen">
+		<text>Stolen</text>
+	</string>
+	<!-- "Claimed" for the built-in fallback label (when Dot Marks is absent) -->
+	<string id="st_npc_loot_buy_claimed">
+		<text>Claimed</text>
+	</string>
+
+	<!-- Claimer is alive but too far to deal with (free looting disabled).  %s = seller name -->
+	<string id="st_npc_loot_buy_toofar">
+		<text>This kill belongs to %s, who is too far off to deal with.</text>
+	</string>
+
+	<!-- Free-looting a claimed body without paying.  %s = claimer name -->
+	<string id="st_npc_loot_buy_stole">
+		<text>You strip a body that %s had claimed. No coin changed hands.</text>
+	</string>
+
+	<!-- ====================================================================
+	     FACTION personalities. prompt_*: %s name, %s price ; done_*: %s name
+	     ==================================================================== -->
+
+	<!-- Loners -->
+	<string id="st_npc_loot_buy_prompt_stalker_1">
+		<text>%s scratches his beard. 'Slukhai, stalker. %s RU and we are even. Dobre?'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_stalker_2">
+		<text>'No sense spilling blood over a corpse,' says %s. 'Give me %s RU and it is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_stalker_1">
+		<text>%s nods slowly. 'Good. Take what you need, and watch yourself out there.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_stalker_2">
+		<text>'Fair is fair,' says %s. The body is yours now.</text>
+	</string>
+
+	<!-- Bandits -->
+	<string id="st_npc_loot_buy_prompt_bandit_1">
+		<text>%s grins, gold tooth shining. 'Oi, khlopche! %s RU and the stiff is yours, nu!'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_bandit_2">
+		<text>'Nu shcho,' sneers %s. 'Hand over %s RU or clear off, before I lose my patience.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_bandit_1">
+		<text>%s snatches the money and laughs. 'Dobre, dobre! It is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_bandit_2">
+		<text>'Knew you had a head on your shoulders,' %s spits. 'Take it and vanish.'</text>
+	</string>
+
+	<!-- Duty -->
+	<string id="st_npc_loot_buy_prompt_dolg_1">
+		<text>%s stands straight. 'This kill is Duty salvage. %s RU for the rights. Make it fast.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_dolg_2">
+		<text>'Rules are rules, stalker,' barks %s. 'Pay the %s RU fee and it is logged to you.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_dolg_1">
+		<text>%s gives a curt nod. 'Salvage approved. Carry on.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_dolg_2">
+		<text>'For the good of the Zone,' says %s, stepping aside. It is yours.</text>
+	</string>
+
+	<!-- Freedom -->
+	<string id="st_npc_loot_buy_prompt_freedom_1">
+		<text>%s leans on his rifle. 'Easy, stalker. %s RU and the body is yours. No quarrel here.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_freedom_2">
+		<text>'Nothing is truly free, you know,' grins %s. 'Toss me %s RU and we are even.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_freedom_1">
+		<text>%s waves a hand. 'There you go. The Zone belongs to all of us anyway.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_freedom_2">
+		<text>'Stay free, druzhe,' says %s. The body is yours.</text>
+	</string>
+
+	<!-- Clear Sky -->
+	<string id="st_npc_loot_buy_prompt_csky_1">
+		<text>%s checks his PDA. 'This kill is on record. %s RU settles it. Agreed?'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_csky_2">
+		<text>'Clear Sky does not work for nothing,' says %s. '%s RU and the salvage is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_csky_1">
+		<text>%s logs the trade. 'Done. The body is released to you.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_csky_2">
+		<text>'A pleasure dealing with a professional,' %s nods. It is yours.</text>
+	</string>
+
+	<!-- Mercenaries -->
+	<string id="st_npc_loot_buy_prompt_killer_1">
+		<text>%s does not blink. 'Everything has a price. This one is %s RU. No bargaining.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_killer_2">
+		<text>'You pay, you take,' says %s flatly. '%s RU. Decide.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_killer_1">
+		<text>%s pockets the roubles without a word. The body is yours.</text>
+	</string>
+	<string id="st_npc_loot_buy_done_killer_2">
+		<text>'Contract closed,' says %s. 'It is yours. We are finished here.'</text>
+	</string>
+
+	<!-- Military -->
+	<string id="st_npc_loot_buy_prompt_army_1">
+		<text>%s lowers his voice. 'This is restricted salvage, civilian. %s RU and I saw no one.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_army_2">
+		<text>'Property of the military,' growls %s. 'But %s RU makes it vanish.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_army_1">
+		<text>%s hides the money quickly. 'Move along. You were never here.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_army_2">
+		<text>'Off the record,' mutters %s. 'Take it and go.'</text>
+	</string>
+
+	<!-- Ecologists -->
+	<string id="st_npc_loot_buy_prompt_ecolog_1">
+		<text>%s adjusts his mask. 'The specimen, yes? %s RU toward our research, and it is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_ecolog_2">
+		<text>'For the funding only, you understand,' says %s. '%s RU, if you please.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_ecolog_1">
+		<text>%s makes a note. 'Specimen released. Do handle it with care.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_ecolog_2">
+		<text>'Most intriguing choice,' murmurs %s. It is yours.</text>
+	</string>
+
+	<!-- Monolith -->
+	<string id="st_npc_loot_buy_prompt_monolith_1">
+		<text>%s stares through you. 'The Monolith permits it. %s RU as tribute, and the flesh is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_monolith_2">
+		<text>'The crystal names a price,' intones %s. '%s RU. Obey it.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_monolith_1">
+		<text>%s lowers his head. 'The Monolith is appeased. Take it.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_monolith_2">
+		<text>'Go now, servant of the Zone,' breathes %s. It is yours.</text>
+	</string>
+
+	<!-- Renegades -->
+	<string id="st_npc_loot_buy_prompt_renegade_1">
+		<text>%s twitches, blade in hand. 'Hroshi first, freak! %s RU, or you go on the pile!'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_renegade_2">
+		<text>'Ha! You want it?' cackles %s. '%s RU, and maybe you live.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_renegade_1">
+		<text>%s grabs the money, grinning. 'Take it and run, little stalker, run!'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_renegade_2">
+		<text>'Your lucky day,' giggles %s. 'It is yours, freak.'</text>
+	</string>
+
+	<!-- Sin -->
+	<string id="st_npc_loot_buy_prompt_greh_1">
+		<text>%s rasps behind his mask. 'The Zone gives and takes. %s RU, and it is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_greh_2">
+		<text>'Sin forgets no debt,' says %s. 'Pay %s RU and the kill is released.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_greh_1">
+		<text>%s makes a slow sign. 'The debt is settled. Take it.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_greh_2">
+		<text>'Walk the true path, stalker,' whispers %s. It is yours.</text>
+	</string>
+
+	<!-- UNISG -->
+	<string id="st_npc_loot_buy_prompt_isg_1">
+		<text>%s regards you coldly. 'This asset is logged to my unit. %s RU clears it. Quickly.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_isg_2">
+		<text>'Need to know, stalker,' says %s. 'You need to pay %s RU. That is all you need to know.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_isg_1">
+		<text>%s pockets the cash, expression unchanged. 'Cleared. The body is yours.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_isg_2">
+		<text>'Transaction recorded,' says %s. 'We were never here. Move.'</text>
+	</string>
+
+	<!-- ====================================================================
+	     MCM
+	     ==================================================================== -->
+	<string id="ui_mcm_menu_npc_loot_buy">
+		<text>Loot Claim Buyout</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_desc1">
+		<text>Buy claimed bodies from the NPCs guarding them. Human bodies are priced by rank, mutants by difficulty and where they died; both are adjusted by your reputation with the claiming faction plus a small random factor.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_enable">
+		<text>Enable buying claimed bodies</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_enable_desc">
+		<text>When off, the original claim behaviour is restored (you are only warned off claimed bodies).</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_interact_mode">
+		<text>Interaction mode</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_interact_mode_desc">
+		<text>At the body: the buy prompt appears when you USE the corpse (the claimer must be nearby). Talk to the killer: using the corpse only tells you who claimed it; you must find that NPC and USE them to buy.</text>
+	</string>
+	<string id="ui_mcm_lst_npc_loot_buy_at_body">
+		<text>At the body</text>
+	</string>
+	<string id="ui_mcm_lst_npc_loot_buy_at_npc">
+		<text>Talk to the killer</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_base_price">
+		<text>Base price (RU)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_base_price_desc">
+		<text>Baseline cost before rank/difficulty, reputation and random modifiers are applied.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_min_price">
+		<text>Minimum price (RU)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_min_price_desc">
+		<text>The price will never drop below this floor, no matter the modifiers.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_rank_weight">
+		<text>Human rank influence</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_rank_weight_desc">
+		<text>How strongly a human body's rank changes the price. 0 ignores rank; higher means veterans/masters cost much more and novices much less.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_mutant_weight">
+		<text>Mutant difficulty influence</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_mutant_weight_desc">
+		<text>How strongly a mutant's difficulty changes the price. 0 ignores difficulty; higher means a flesh stays cheap while a chimera or pseudogiant costs a fortune.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_location_weight">
+		<text>Map danger influence</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_location_weight_desc">
+		<text>How strongly the map a body was killed on changes its price. 0 ignores location; higher means kills in Cordon are cheap and kills in Red Forest or the CNPP are worth far more. Applies to mutants, and to humans if the option below is on.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_location_humans">
+		<text>Apply map danger to human bodies too</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_location_humans_desc">
+		<text>When on, the map danger multiplier also affects human corpse prices, not just mutants. Uses the same Map danger influence slider above.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_rep_divisor">
+		<text>Reputation divisor</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_rep_divisor_desc">
+		<text>Larger values make your reputation with the claiming faction matter less. Smaller values make friends much cheaper and rivals much pricier.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_rep_cap">
+		<text>Reputation cap</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_rep_cap_desc">
+		<text>Maximum discount or surcharge from reputation. 0.5 means at most 50% cheaper if they like you, or 50% pricier if they do not.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_random_spread">
+		<text>Random spread</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_random_spread_desc">
+		<text>Size of the random price jitter. 0.15 means the final price varies by up to plus or minus 15%. The roll is fixed per body so it can't be rolled again.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_enemy_threshold">
+		<text>Refuse to sell goodwill</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_enemy_threshold_desc">
+		<text>If the claiming faction's goodwill toward you is at or below this value, they refuse to deal and warn you off (original behaviour).</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_max_dist">
+		<text>Deal range (m)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_max_dist_desc">
+		<text>How close the claiming NPC must be to deal: within range you get the buy prompt (or the "go find them" hint in talk mode). Beyond it the claimer is too far to stop you. See the free looting option below.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_loot_when_far">
+		<text>Loot for free when the claimer is far</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_loot_when_far_desc">
+		<text>When on, if the claiming NPC is farther than the deal range you can loot the body for free instead of buying it. When off, the base mod's "too far" behaviour applies.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot">
+		<text>Free looting can alert the faction</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot_desc">
+		<text>When on, looting a claimed body for free has a chance to alert nearby members of that faction to your location, and they turn hostile and come for you.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_alert_chance">
+		<text>Alert chance</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_alert_chance_desc">
+		<text>Probability that free looting gives you away. 0 = never, 1 = always.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_alert_radius">
+		<text>Alert radius (m)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_alert_radius_desc">
+		<text>How close faction members must be to notice you and turn hostile when you loot for free.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_pda_notify">
+		<text>Use PDA notifications</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_pda_notify_desc">
+		<text>When on, buy/steal/find-the-killer messages are shown as persistent PDA notifications carrying the NPC's name and face, so you know who to go to, instead of brief on-screen text.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_debug">
+		<text>Debug logging</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_debug_desc">
+		<text>Writes diagnostics to appdata\logs\npc_loot_buy_dbg.log and shows them on screen, to troubleshoot why a buy prompt does or does not appear. Leave off during normal play.</text>
+	</string>
+
+</string_table>

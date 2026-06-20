@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+	<!-- Buy prompt (generic).  %s = seller name, %s = price -->
+	<string id="st_npc_loot_buy_prompt_1">
+		<text>%s сплёвывает в сторону. 'Этот мой, сталкер. Хочешь забрать, %s RU. Ну, да или нет?'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_2">
+		<text>%s окидывает тебя взглядом. 'Плати %s RU, и тело твоё. Ничего личного.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_3">
+		<text>'Развелось падальщиков в Зоне,' бормочет %s. 'Гони %s RU и копайся сам.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_4">
+		<text>%s держит руку на автомате. 'Я его положил, значит он мой. За %s RU я тебя не видел.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_5">
+		<text>'У всего тут своя цена,' говорит %s. 'Выкладывай %s RU, и тело твоё.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_6">
+		<text>%s пожимает плечами. 'Зона берёт, Зона даёт. %s RU, и я ничего не видел.'</text>
+	</string>
+
+	<!-- Deal closed (generic).  %s = seller name -->
+	<string id="st_npc_loot_buy_done_1">
+		<text>%s забирает деньги и кивает. 'Хорошо. Тело твоё.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_2">
+		<text>'Разумно,' говорит %s, отходя в сторону. Теперь тело твоё.</text>
+	</string>
+	<string id="st_npc_loot_buy_done_3">
+		<text>%s пересчитывает купюры. 'Твоё. Только не привыкай.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_4">
+		<text>Сделка закрыта. %s кивает в сторону тела.</text>
+	</string>
+	<string id="st_npc_loot_buy_done_5">
+		<text>%s прячет рубли. 'Давай, забирай что нужно.'</text>
+	</string>
+
+	<!-- Can't afford it.  %s = price -->
+	<string id="st_npc_loot_buy_poor_1">
+		<text>У тебя не наберётся %s RU.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_2">
+		<text>Не хватает у тебя денег на это.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_3">
+		<text>'Возвращайся, когда будет %s RU,' говорит он и отворачивается.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_4">
+		<text>Карманы у тебя слишком пусты для такой сделки.</text>
+	</string>
+
+	<!-- Talk-to-killer hint.  %s = seller name -->
+	<string id="st_npc_loot_buy_goto_1">
+		<text>Этот труп принадлежит %s. Поговори с ним, если хочешь забрать.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_2">
+		<text>Тело уже заняли. Найди %s и предложи цену.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_3">
+		<text>%s завалил этого. Придётся договариваться с ним напрямую.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_4">
+		<text>Не тебе его брать. Найди %s и обсуди условия.</text>
+	</string>
+	<string id="st_npc_loot_buy_goto_5">
+		<text>Тело уже за кем-то. Лучше подойди и спроси %s.</text>
+	</string>
+
+	<string id="st_npc_loot_buy_someone">
+		<text>сталкер</text>
+	</string>
+
+	<!-- ===== Faction personalities ===== -->
+
+	<!-- Loners -->
+	<string id="st_npc_loot_buy_prompt_stalker_1">
+		<text>%s чешет бороду. 'Слухай, сталкер, %s RU, и мы в расчёте. Добре?'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_stalker_2">
+		<text>'Нет смысла лить кровь из-за трупа,' говорит %s. 'Дай %s RU, и он твой.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_stalker_1">
+		<text>%s медленно кивает. 'Хорошо. Бери что нужно, и береги себя там.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_stalker_2">
+		<text>'По-честному так по-честному,' говорит %s. Теперь тело твоё.</text>
+	</string>
+
+	<!-- Bandits -->
+	<string id="st_npc_loot_buy_prompt_bandit_1">
+		<text>%s ухмыляется, блестя золотым зубом. 'Ой, хлопче! %s RU, и жмурик твой, ну!'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_bandit_2">
+		<text>'Ну шо,' усмехается %s. 'Гони %s RU или вали, пока я добрый.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_bandit_1">
+		<text>%s хватает деньги и ржёт. 'Добре, добре! Твоё.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_bandit_2">
+		<text>'Знал, что ты с головой,' сплёвывает %s. 'Забирай и проваливай.'</text>
+	</string>
+
+	<!-- Duty -->
+	<string id="st_npc_loot_buy_prompt_dolg_1">
+		<text>%s выпрямляется. 'Это трофей Долга. %s RU за право. И поживее.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_dolg_2">
+		<text>'Порядок есть порядок, сталкер,' рявкает %s. 'Плати %s RU, и оформим на тебя.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_dolg_1">
+		<text>%s коротко кивает. 'Изъятие разрешено. Проходи.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_dolg_2">
+		<text>'Ради блага Зоны,' говорит %s, отступая. Тело твоё.</text>
+	</string>
+
+	<!-- Freedom -->
+	<string id="st_npc_loot_buy_prompt_freedom_1">
+		<text>%s опирается на автомат. 'Спокойно, сталкер. %s RU, и тело твоё. Без обид.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_freedom_2">
+		<text>'Ничто тут не бывает даром, сам знаешь,' ухмыляется %s. 'Кинь %s RU, и мы в расчёте.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_freedom_1">
+		<text>%s машет рукой. 'Вот так. Зона всё равно общая.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_freedom_2">
+		<text>'Будь свободен, друже,' говорит %s. Тело твоё.</text>
+	</string>
+
+	<!-- Clear Sky -->
+	<string id="st_npc_loot_buy_prompt_csky_1">
+		<text>%s сверяется с КПК. 'Эта добыча учтена. %s RU всё решат. Согласен?'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_csky_2">
+		<text>'Чистое Небо не работает задаром,' говорит %s. '%s RU, и трофей твой.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_csky_1">
+		<text>%s заносит сделку в КПК. 'Готово. Тело передано тебе.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_csky_2">
+		<text>'Приятно иметь дело с профессионалом,' кивает %s. Оно твоё.</text>
+	</string>
+
+	<!-- Mercenaries -->
+	<string id="st_npc_loot_buy_prompt_killer_1">
+		<text>%s не моргнув глазом. 'У всего есть цена. За этого, %s RU. Без торга.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_killer_2">
+		<text>'Платишь, забираешь,' ровно говорит %s. '%s RU. Решай.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_killer_1">
+		<text>%s молча прячет рубли. Тело твоё.</text>
+	</string>
+	<string id="st_npc_loot_buy_done_killer_2">
+		<text>'Контракт закрыт,' говорит %s. 'Оно твоё. Мы закончили.'</text>
+	</string>
+
+	<!-- Military -->
+	<string id="st_npc_loot_buy_prompt_army_1">
+		<text>%s понижает голос. 'Это закрытая зона, гражданский. %s RU, и я никого не видел.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_army_2">
+		<text>'Военное имущество,' рычит %s. 'Но за %s RU оно исчезнет.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_army_1">
+		<text>%s быстро прячет деньги. 'Проходи. Тебя здесь не было.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_army_2">
+		<text>'Не под протокол,' бормочет %s. 'Забирай и уходи.'</text>
+	</string>
+
+	<!-- Ecologists -->
+	<string id="st_npc_loot_buy_prompt_ecolog_1">
+		<text>%s поправляет маску. 'Образец, да? %s RU на наши исследования, и он ваш.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_ecolog_2">
+		<text>'Исключительно ради финансирования, понимаете,' говорит %s. '%s RU, будьте добры.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_ecolog_1">
+		<text>%s делает пометку. 'Образец передан. Обращайтесь с ним осторожно.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_ecolog_2">
+		<text>'Прелюбопытный выбор,' бормочет %s. Оно ваше.</text>
+	</string>
+
+	<!-- Monolith -->
+	<string id="st_npc_loot_buy_prompt_monolith_1">
+		<text>%s смотрит сквозь тебя. 'Монолит дозволяет. %s RU как подношение, и плоть твоя.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_monolith_2">
+		<text>'Кристалл называет цену,' нараспев произносит %s. '%s RU. Повинуйся.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_monolith_1">
+		<text>%s склоняет голову. 'Монолит умилостивлён. Бери.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_monolith_2">
+		<text>'Ступай, слуга Зоны,' выдыхает %s. Оно твоё.</text>
+	</string>
+
+	<!-- Renegades -->
+	<string id="st_npc_loot_buy_prompt_renegade_1">
+		<text>%s дёргается, нож в руке. 'Сначала бабки, урод! %s RU, или пойдёшь в кучу!'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_renegade_2">
+		<text>'Ха! Хочешь его?' гогочет %s. '%s RU, и может, поживёшь.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_renegade_1">
+		<text>%s хватает деньги, скалясь. 'Забирай и беги, сталкерок, беги!'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_renegade_2">
+		<text>'Твой счастливый день,' хихикает %s. 'Оно твоё, урод.'</text>
+	</string>
+
+	<!-- Sin -->
+	<string id="st_npc_loot_buy_prompt_greh_1">
+		<text>%s хрипит из-под маски. 'Зона даёт и забирает. %s RU, и оно твоё.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_greh_2">
+		<text>'Грех не забывает долгов,' говорит %s. 'Заплати %s RU, и добыча освобождена.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_greh_1">
+		<text>%s медленно крестится. 'Долг уплачен. Бери.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_greh_2">
+		<text>'Иди истинным путём, сталкер,' шепчет %s. Оно твоё.</text>
+	</string>
+
+	<!-- UNISG -->
+	<string id="st_npc_loot_buy_prompt_isg_1">
+		<text>%s холодно смотрит на тебя. 'Этот объект закреплён за моим подразделением. %s RU, и вопрос закрыт. Быстро.'</text>
+	</string>
+	<string id="st_npc_loot_buy_prompt_isg_2">
+		<text>'Только по необходимости, сталкер,' говорит %s. 'Тебе нужно заплатить %s RU. Это всё, что тебе нужно знать.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_isg_1">
+		<text>%s прячет деньги, не меняясь в лице. 'Допуск получен. Тело твоё.'</text>
+	</string>
+	<string id="st_npc_loot_buy_done_isg_2">
+		<text>'Операция зафиксирована,' говорит %s. 'Нас здесь не было. Уходи.'</text>
+	</string>
+
+	<!-- ===== MCM ===== -->
+	<string id="ui_mcm_menu_npc_loot_buy">
+		<text>Выкуп трупов</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_desc1">
+		<text>Выкупайте занятые трупы у НПС, которые их стерегут. Человеческие тела оцениваются по рангу, мутанты, по сложности и месту гибели; всё корректируется вашей репутацией с фракцией и небольшим случайным множителем.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_enable">
+		<text>Включить выкуп занятых трупов</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_enable_desc">
+		<text>Если выключено, восстанавливается исходное поведение (вас лишь предупреждают о занятых телах).</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_interact_mode">
+		<text>Способ взаимодействия</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_interact_mode_desc">
+		<text>У тела: запрос появляется при использовании трупа (хозяин должен быть рядом). Найти убийцу: труп лишь подскажет, кто его занял; нужно найти этого НПС и нажать на нём использование, чтобы купить.</text>
+	</string>
+	<string id="ui_mcm_lst_npc_loot_buy_at_body">
+		<text>У тела</text>
+	</string>
+	<string id="ui_mcm_lst_npc_loot_buy_at_npc">
+		<text>Найти убийцу</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_base_price">
+		<text>Базовая цена (RU)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_base_price_desc">
+		<text>Базовая стоимость до применения ранга/сложности, репутации и случайности.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_min_price">
+		<text>Минимальная цена (RU)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_min_price_desc">
+		<text>Цена никогда не опустится ниже этого порога.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_rank_weight">
+		<text>Влияние ранга (люди)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_rank_weight_desc">
+		<text>Насколько ранг человеческого тела меняет цену. 0, ранг не учитывается; выше, ветераны/мастера дороже, новички дешевле.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_mutant_weight">
+		<text>Влияние сложности мутанта</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_mutant_weight_desc">
+		<text>Насколько сложность мутанта меняет цену. 0, не учитывается; выше, плоть остаётся дешёвой, а химера или псевдогигант стоят целое состояние.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_location_weight">
+		<text>Влияние опасности локации</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_location_weight_desc">
+		<text>Насколько карта, где убито тело, меняет цену. 0, не учитывается; выше, добыча в Кордоне дёшева, а в Рыжем лесу или на ЧАЭС стоит куда дороже. Влияет на мутантов, а на людей, если включена опция ниже.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_location_humans">
+		<text>Применять опасность локации и к людям</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_location_humans_desc">
+		<text>Если включено, множитель опасности локации влияет и на цену человеческих тел, а не только мутантов. Использует тот же ползунок выше.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_rep_divisor">
+		<text>Делитель репутации</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_rep_divisor_desc">
+		<text>Большие значения уменьшают влияние вашей репутации с фракцией. Меньшие, друзья дешевле, недруги дороже.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_rep_cap">
+		<text>Предел репутации</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_rep_cap_desc">
+		<text>Максимальная скидка или наценка от репутации. 0.5 означает не более 50% скидки (если к вам хорошо относятся) или 50% наценки (если недолюбливают).</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_random_spread">
+		<text>Случайный разброс</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_random_spread_desc">
+		<text>Размер случайного разброса цены. 0.15 означает, что итоговая цена меняется до плюс или минус 15%. Бросок фиксируется для каждого тела, его нельзя перекрутить.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_enemy_threshold">
+		<text>Порог отказа в продаже</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_enemy_threshold_desc">
+		<text>Если благосклонность фракции к вам не выше этого значения, они отказываются торговать и прогоняют вас (исходное поведение).</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_max_dist">
+		<text>Дистанция сделки (м)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_max_dist_desc">
+		<text>Насколько близко должен быть хозяин для сделки: в пределах дистанции появляется запрос на покупку (или подсказка "найти убийцу" в режиме поиска). Дальше хозяин слишком далеко, чтобы помешать вам, см. опцию бесплатной обдирки ниже.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_loot_when_far">
+		<text>Забирать даром, когда хозяин далеко</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_loot_when_far_desc">
+		<text>Если включено и хозяин трупа дальше дистанции сделки, тело можно обыскать бесплатно, без выкупа. Если выключено, действует поведение базового мода для случая "слишком далеко".</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot">
+		<text>Бесплатная обдирка может выдать вас</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot_desc">
+		<text>Если включено, при бесплатной обдирке занятого тела есть шанс, что ближайшие бойцы этой фракции засекут вас, они станут враждебны и пойдут на вас.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_alert_chance">
+		<text>Шанс быть замеченным</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_alert_chance_desc">
+		<text>Вероятность того, что бесплатная обдирка выдаст вас. 0, никогда, 1, всегда.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_alert_radius">
+		<text>Радиус оповещения (м)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_alert_radius_desc">
+		<text>В каком радиусе вокруг вас бойцы фракции могут вас засечь и стать враждебными при бесплатной обдирке.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_debug">
+		<text>Отладочный лог</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_debug_desc">
+		<text>Пишет диагностику в appdata\logs\npc_loot_buy_dbg.log и показывает её на экране, чтобы понять, почему запрос на покупку появляется или нет. В обычной игре держите выключенным.</text>
+	</string>
+
+	<string id="st_npc_loot_buy_toofar">
+		<text>Эта добыча принадлежит %s, но он слишком далеко, чтобы договориться.</text>
+	</string>
+
+	<string id="st_npc_loot_buy_bought">
+		<text>Куплено</text>
+	</string>
+	<string id="st_npc_loot_buy_stolen">
+		<text>Украдено</text>
+	</string>
+	<!-- 'Claimed' for the built-in fallback label (when Dot Marks is absent) -->
+	<string id="st_npc_loot_buy_claimed">
+		<text>Занято</text>
+	</string>
+
+	<string id="st_npc_loot_buy_stole">
+		<text>Ты обираешь тело, на которое претендовал %s. Денег ты не платил.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_pda_notify">
+		<text>Уведомления в КПК</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_pda_notify_desc">
+		<text>Если включено, сообщения о покупке, краже и поиске убийцы показываются как постоянные уведомления в КПК с именем и лицом НПС, чтобы вы знали, к кому идти, а не короткий текст на экране.</text>
+	</string>
+
+</string_table>

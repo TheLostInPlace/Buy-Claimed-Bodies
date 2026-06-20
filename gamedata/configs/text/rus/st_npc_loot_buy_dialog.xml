@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+	<!-- Player lines and static fallbacks (NPC offer/result lines are dynamic). -->
+	<string id="npc_loot_buy_talk_ask">
+		<text>Это тело ты застолбил, не продашь его мне?</text>
+	</string>
+	<string id="npc_loot_buy_talk_deal">
+		<text>По рукам. Вот твои деньги.</text>
+	</string>
+	<string id="npc_loot_buy_talk_no">
+		<text>Тогда забудь.</text>
+	</string>
+	<string id="npc_loot_buy_talk_bye">
+		<text>Как знаешь, сталкер.</text>
+	</string>
+	<string id="npc_loot_buy_talk_offer_fallback">
+		<text>Может, и есть труп на продажу. За хорошую цену.</text>
+	</string>
+	<string id="npc_loot_buy_talk_done_fallback">
+		<text>Приятно иметь дело. Всё твоё.</text>
+	</string>
+
+	<!-- NPC has no claimed body, faction-flavored "nothing to sell" lines -->
+	<string id="npc_loot_buy_nokill_stalker">
+		<text>Нет у меня свежих трупов на продажу, сталкер. Загляни в другой раз.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_bandit">
+		<text>Ха! Думаешь, я держу для тебя жмурика наготове, гопник? Ничего нет.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_dolg">
+		<text>Сейчас нечего оформлять, сталкер. Проходи.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_freedom">
+		<text>Ничего нет, друже. В Зоне нынче тихо.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_csky">
+		<text>Сейчас никаких записей. Загляни позже.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_killer">
+		<text>Ничего для тебя нет. Будет, заплатишь по полной.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_army">
+		<text>Нечего сбывать сейчас, гражданский. Иди дальше.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_ecolog">
+		<text>Боюсь, сейчас образцов нет.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_monolith">
+		<text>Монолит не дал мне ничего на обмен. Ступай.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_renegade">
+		<text>Ха! Сегодня мяса для тебя нет, урод. Может, пойду добуду, а?</text>
+	</string>
+	<string id="npc_loot_buy_nokill_greh">
+		<text>Грех не держит для тебя долгов сейчас. Иди.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_isg">
+		<text>В моём подразделении ничего не числится. Спроси в другой раз.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_generic">
+		<text>Сейчас мне нечего тебе продать.</text>
+	</string>
+
+</string_table>

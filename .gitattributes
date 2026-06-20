@@ -1,0 +1,2 @@
+# Russian localization is windows-1251, keep it byte exact (no eol normalization)
+gamedata/configs/text/rus/*.xml -text

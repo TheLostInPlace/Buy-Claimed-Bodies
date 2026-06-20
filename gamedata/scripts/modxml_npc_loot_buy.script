@@ -1,0 +1,14 @@
+-- adds the "buy a body" dialogue option to every NPC. the tree is registered via
+-- mod_system_npc_loot_buy.ltx with DLTX, logic lives in z_npc_loot_buy.script
+
+local DIALOG_ID = "npc_loot_buy_talk"
+
+function on_xml_read() end -- DLTX handles the dialog file, this satisfies the DXML loader
+
+function on_game_start()
+	RegisterScriptCallback("on_specific_character_dialog_list", function(character_id, dialog_list)
+		if not dialog_list then return end
+		if dialog_list.has and dialog_list:has(DIALOG_ID) then return end
+		if dialog_list.add then dialog_list:add(DIALOG_ID) end
+	end)
+end

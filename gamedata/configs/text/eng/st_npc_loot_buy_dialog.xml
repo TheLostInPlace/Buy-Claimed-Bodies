@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+	<!-- Player lines and static fallbacks (the NPC offer/result lines are
+	     generated dynamically in z_npc_loot_buy.script via <script_text>). -->
+	<string id="npc_loot_buy_talk_ask">
+		<text>That body you claimed, mind if I buy it off you?</text>
+	</string>
+	<string id="npc_loot_buy_talk_deal">
+		<text>Deal. Here's your coin.</text>
+	</string>
+	<string id="npc_loot_buy_talk_no">
+		<text>Never mind, then.</text>
+	</string>
+	<string id="npc_loot_buy_talk_bye">
+		<text>Suit yourself, stalker.</text>
+	</string>
+	<string id="npc_loot_buy_talk_offer_fallback">
+		<text>I might have a kill to spare. For the right price.</text>
+	</string>
+	<string id="npc_loot_buy_talk_done_fallback">
+		<text>Pleasure doing business. It's all yours.</text>
+	</string>
+
+	<!-- NPC has no claimed body - faction-flavored "nothing to sell" lines -->
+	<string id="npc_loot_buy_nokill_stalker">
+		<text>Haven't got any fresh kills to sell, stalker. Try me another time.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_bandit">
+		<text>Ha! You think I keep a body lying around just for you, gopnik? Nothing here.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_dolg">
+		<text>No salvage to log right now, stalker. Move along.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_freedom">
+		<text>Nothing on me, druzhe. The Zone's been quiet lately.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_csky">
+		<text>No claims on record at the moment. Check back later.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_killer">
+		<text>Got nothing for you. When I do, you'll pay full price.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_army">
+		<text>No bodies to move right now, civilian. Keep walking.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_ecolog">
+		<text>No specimens to spare at present, I'm afraid.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_monolith">
+		<text>The Monolith has granted me nothing to trade. Go.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_renegade">
+		<text>Hah! No meat for you today, freak. Maybe I go make some, eh?</text>
+	</string>
+	<string id="npc_loot_buy_nokill_greh">
+		<text>Sin holds no debts for you to claim now. Walk on.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_isg">
+		<text>Nothing logged to my unit. Inquire another time.</text>
+	</string>
+	<string id="npc_loot_buy_nokill_generic">
+		<text>I've got nothing to sell you right now.</text>
+	</string>
+
+</string_table>

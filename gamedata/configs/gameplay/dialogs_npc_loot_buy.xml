@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<game_dialogs>
+	<dialog id="npc_loot_buy_talk">
+		<precondition>z_npc_loot_buy.dlg_available</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>npc_loot_buy_talk_ask</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>npc_loot_buy_talk_offer_fallback</text>
+				<script_text>z_npc_loot_buy.dlg_offer_text</script_text>
+				<next>2</next>
+				<next>3</next>
+			</phrase>
+			<phrase id="2">
+				<precondition>z_npc_loot_buy.dlg_can_buy</precondition>
+				<text>npc_loot_buy_talk_deal</text>
+				<action>z_npc_loot_buy.dlg_do_purchase</action>
+				<next>4</next>
+			</phrase>
+			<phrase id="3">
+				<text>npc_loot_buy_talk_no</text>
+				<next>5</next>
+			</phrase>
+			<phrase id="4">
+				<text>npc_loot_buy_talk_done_fallback</text>
+				<script_text>z_npc_loot_buy.dlg_done_text</script_text>
+			</phrase>
+			<phrase id="5">
+				<text>npc_loot_buy_talk_bye</text>
+				<script_text>z_npc_loot_buy.dlg_bye_text</script_text>
+			</phrase>
+		</phrase_list>
+	</dialog>
+</game_dialogs>

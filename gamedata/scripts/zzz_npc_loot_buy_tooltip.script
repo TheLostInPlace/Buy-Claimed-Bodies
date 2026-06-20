@@ -1,0 +1,49 @@
+-- Interaction Dot Marks integration. Labels corpses (Claimed), (Bought) or
+-- (Stolen). Dot Marks only sets a corpse mark's args.name, the "(Claimed)"
+-- suffix, when a base loot claim mod tags it, otherwise it stays a plain name.
+-- args.name is the only lever, the marker bakes its name once at build and
+-- bestname is a local upvalue. So we wrap the single mark build entry,
+-- get_args_for_valid_objects, and set args.name ourselves. nudge_body_mark
+-- forces a rebuild so the label refreshes. does nothing if Dot Marks is absent
+
+local function claimed_suffix()
+	return " (" .. game.translate_string("st_body_is_claimed") .. ")"
+end
+
+-- the corpse's clean name. we ignore args.name on purpose, the base only ever
+-- sets it to add its own "(Claimed)" suffix which we must not carry over
+local function stem_name(id, args)
+	local obj = level.object_by_id(id)
+	if obj and dotmarks_main and dotmarks_main.best_localized_object_name then
+		local n = dotmarks_main.best_localized_object_name(obj)
+		if n and n ~= "" then return n end
+	end
+	return (args and args.name) or ""
+end
+
+function on_game_start()
+	if not (ui_hud_dotmarks and ui_hud_dotmarks.get_args_for_valid_objects) then return end
+	if ui_hud_dotmarks.__npc_loot_buy_args_hooked then return end
+
+	local base_get_args = ui_hud_dotmarks.get_args_for_valid_objects
+	ui_hud_dotmarks.get_args_for_valid_objects = function(id)
+		local args = base_get_args(id)
+		if args and args.is_npc and id and z_npc_loot_buy then
+			-- bought or stolen take precedence, else our own claim the base mod missed
+			local suffix = z_npc_loot_buy.body_status_label and z_npc_loot_buy.body_status_label(id)
+			if (not suffix) and (not args.name)
+				and z_npc_loot_buy.has_live_claim and z_npc_loot_buy.has_live_claim(id) then
+				suffix = claimed_suffix()
+			end
+			if suffix then
+				args.name = stem_name(id, args) .. suffix
+				if z_npc_loot_buy.dbglog then
+					z_npc_loot_buy.dbglog("dotmarks label: id %s -> '%s'", tostring(id), tostring(args.name))
+				end
+			end
+		end
+		return args
+	end
+
+	ui_hud_dotmarks.__npc_loot_buy_args_hooked = true
+end
