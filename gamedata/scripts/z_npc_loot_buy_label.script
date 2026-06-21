@@ -48,4 +48,7 @@ end
 function on_game_start()
 	if ui_hud_dotmarks then return end -- Dot Marks renders the labels itself
 	RegisterScriptCallback("actor_on_update", on_update)
+	if z_npc_loot_buy and z_npc_loot_buy.dbglog then
+		z_npc_loot_buy.dbglog("fallback look at label active (Dot Marks absent)")
+	end
 end

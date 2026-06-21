@@ -18,6 +18,11 @@ local function get_cfg(key)
 	return DEFAULTS[key]
 end
 
+-- diagnostics go to the same debug log as the rest of the mod (MCM debug toggle)
+local function log(fmt, ...)
+	if z_npc_loot_buy and z_npc_loot_buy.dbglog then z_npc_loot_buy.dbglog(fmt, ...) end
+end
+
 local function alifeplus_loot_on()
 	return ap_core_mcm and ap_core_mcm.cfg and ap_core_mcm.cfg.loot_enabled == true
 end
@@ -29,22 +34,28 @@ local function warn_conflict()
 	if actor_menu and actor_menu.set_msg then
 		actor_menu.set_msg(1, game.translate_string("st_npc_loot_buy_alifeplus_warn"), 8)
 	end
-	if z_npc_loot_buy and z_npc_loot_buy.dbglog then
-		z_npc_loot_buy.dbglog("npc claim respect disabled: AlifePlus loot_enabled is on")
-	end
+	log("npc claim respect disabled: AlifePlus loot_enabled is on")
 end
 
 -- true when our NPC claim respect should actually run
+local activated = false
 local function respect_active()
 	if get_cfg("npc_respect_claims") ~= true then return false end
 	if alifeplus_loot_on() then warn_conflict(); return false end
+	if not activated then
+		activated = true
+		log("npc claim respect active, owner_loots=%s", tostring(get_cfg("npc_owner_loots") ~= false))
+	end
 	return true
 end
+
+local mask_log_t = 0
 
 function on_game_start()
 	if xr_corpse_detection and xr_corpse_detection.__npc_loot_buy_respect_hooked then return end
 	if not (xr_corpse_detection and xr_corpse_detection.evaluator_corpse
 		and xr_corpse_detection.evaluator_corpse.find_valid_target) then
+		log("npc claim respect unavailable: xr_corpse_detection not found (needs More Aggressive NPC Looting)")
 		return
 	end
 
@@ -71,6 +82,14 @@ function on_game_start()
 			end
 		end
 
+		if #masked > 0 then
+			local now = time_global()
+			if now - mask_log_t > 5000 then
+				mask_log_t = now
+				log("npc claim respect: npc %s skipping %s claimed bodies", tostring(npcid), tostring(#masked))
+			end
+		end
+
 		local ok, r = pcall(base_find, self)
 
 		for i = 1, #masked do
@@ -81,8 +100,10 @@ function on_game_start()
 		end
 
 		if ok then return r end
+		log("ERROR in xr_corpse_detection.find_valid_target: %s", tostring(r))
 		return false
 	end
 
 	xr_corpse_detection.__npc_loot_buy_respect_hooked = true
+	log("npc claim respect: patched xr_corpse_detection.find_valid_target")
 end

@@ -21,8 +21,15 @@ local function stem_name(id, args)
 	return (args and args.name) or ""
 end
 
+local function log(fmt, ...)
+	if z_npc_loot_buy and z_npc_loot_buy.dbglog then z_npc_loot_buy.dbglog(fmt, ...) end
+end
+
 function on_game_start()
-	if not (ui_hud_dotmarks and ui_hud_dotmarks.get_args_for_valid_objects) then return end
+	if not (ui_hud_dotmarks and ui_hud_dotmarks.get_args_for_valid_objects) then
+		log("dotmarks label: Interaction Dot Marks absent, using on screen fallback")
+		return
+	end
 	if ui_hud_dotmarks.__npc_loot_buy_args_hooked then return end
 
 	local base_get_args = ui_hud_dotmarks.get_args_for_valid_objects
@@ -46,4 +53,5 @@ function on_game_start()
 	end
 
 	ui_hud_dotmarks.__npc_loot_buy_args_hooked = true
+	log("dotmarks label: wrapped get_args_for_valid_objects")
 end
