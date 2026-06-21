@@ -426,4 +426,16 @@
 	<string id="st_npc_loot_buy_alifeplus_warn">
 		<text>Уважение прав НПС отключено, пока включено владение трупами AlifePlus. Отключите одно из двух.</text>
 	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_enable">
+		<text>Ваш ранг влияет на цену</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_enable_desc">
+		<text>Если включено, ваш ранг меняет цену. Новичка задирают, и он платит больше, а ветеран и выше в почёте и платит меньше.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_weight">
+		<text>Влияние вашего ранга</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_weight_desc">
+		<text>Насколько сильно ваш ранг двигает цену. При 1.0 новичок платит примерно на 20% больше, а легенда примерно на 45% меньше. 0 не учитывает ранг.</text>
+	</string>
 </string_table>

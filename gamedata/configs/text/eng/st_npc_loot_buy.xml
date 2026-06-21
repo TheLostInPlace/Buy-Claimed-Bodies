@@ -364,6 +364,19 @@
 		<text>Maximum discount or surcharge from reputation. 0.5 means at most 50% cheaper if they like you, or 50% pricier if they do not.</text>
 	</string>
 
+	<string id="ui_mcm_npc_loot_buy_player_rank_enable">
+		<text>Your rank affects price</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_enable_desc">
+		<text>When on, your own rank changes the price. A rookie gets bullied and pays more, a veteran or higher is respected and pays less.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_weight">
+		<text>Your rank influence</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_player_rank_weight_desc">
+		<text>How strongly your rank moves the price. At 1.0 a rookie pays about 20% more and a legend about 45% less, 0 ignores your rank.</text>
+	</string>
+
 	<string id="ui_mcm_npc_loot_buy_random_spread">
 		<text>Random spread</text>
 	</string>

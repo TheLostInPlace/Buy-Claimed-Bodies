@@ -11,6 +11,8 @@ local defaults = {
 	location_humans = false,   -- also apply map danger to human bodies, not just mutants
 	rep_divisor     = 2000,    -- larger means your reputation matters less to the price
 	rep_cap         = 0.5,     -- max discount or surcharge from reputation, 0.5 is plus or minus 50%
+	player_rank_enable = false, -- your own rank affects price, rookies pay more, veterans pay less
+	player_rank_weight = 1.0,  -- how strongly your rank moves the price, 0 ignores it
 	random_spread   = 0.15,    -- random jitter on the final price, 0.15 is plus or minus 15%
 	enemy_threshold = -1000,   -- at or below this faction goodwill they refuse to sell
 	max_dist        = 25,      -- how close the claiming NPC must be to deal, in meters
@@ -49,6 +51,8 @@ function on_mcm_load()
 			{ id = "location_humans", type = "check", val = 1, def = false },
 			{ id = "rep_divisor",     type = "track", val = 2, min = 100,    max = 10000, step = 100, def = 2000 },
 			{ id = "rep_cap",         type = "track", val = 2, min = 0,      max = 0.9,   step = 0.05, def = 0.5 },
+			{ id = "player_rank_enable", type = "check", val = 1, def = false },
+			{ id = "player_rank_weight", type = "track", val = 2, min = 0, max = 3, step = 0.1, def = 1.0 },
 			{ id = "random_spread",   type = "track", val = 2, min = 0,      max = 0.5,   step = 0.05, def = 0.15 },
 			{ id = "enemy_threshold", type = "track", val = 2, min = -10000, max = 0,     step = 250, def = -1000 },
 			{ id = "max_dist",        type = "track", val = 2, min = 5,      max = 50,    step = 1,   def = 25 },

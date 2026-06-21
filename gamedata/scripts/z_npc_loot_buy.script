@@ -41,6 +41,20 @@ local RANK_BONUS = {
 	legend       =  2.00,
 }
 
+-- the actor's own rank to a price modifier, scaled by player_rank_weight. low
+-- rank gets bullied and pays more, high rank is respected and pays less. same
+-- tiers, opposite direction to the victim bonus above
+local PLAYER_RANK_BONUS = {
+	novice       =  0.20,
+	trainee      =  0.10,
+	experienced  =  0.00,
+	professional = -0.05,
+	veteran      = -0.15,
+	expert       = -0.25,
+	master       = -0.35,
+	legend       = -0.45,
+}
+
 -- map a character_rank value to a tier, upper bounds from the same rating list,
 -- used only when a body has no rank name recorded
 local RANK_THRESHOLDS = {
@@ -126,6 +140,8 @@ local MCM_DEFAULTS = {
 	location_humans = false,
 	rep_divisor     = 2000,
 	rep_cap         = 0.5,
+	player_rank_enable = false,
+	player_rank_weight = 1.0,
 	random_spread   = 0.15,
 	enemy_threshold = -1000,
 	max_dist        = 25,
@@ -278,6 +294,19 @@ local function rep_factor(faction)
 	return 1 - clamp(faction_goodwill(faction) / divisor, -cap, cap)
 end
 
+-- the actor's own rank as a price multiplier, scaled by player_rank_weight. uses
+-- character_rank because the actor is not a stalker object so rank_name fails on
+-- it. low rank pays more, high rank pays less
+local function player_rank_factor()
+	if get_cfg("player_rank_enable") ~= true then return 1.0 end
+	local actor = db.actor
+	if not actor then return 1.0 end
+	local w = tonumber(get_cfg("player_rank_weight")) or 1.0
+	local rnum = (actor.character_rank and actor:character_rank()) or 0
+	local bonus = PLAYER_RANK_BONUS[rank_from_value(rnum)] or 0
+	return math.max(0.3, 1 + bonus * w)
+end
+
 -- victim_obj may be nil for an offline body, then it falls back to victim_info
 local function compute_price(vid, victim_obj, seller)
 	if price_cache[vid] then return price_cache[vid] end
@@ -321,12 +350,13 @@ local function compute_price(vid, victim_obj, seller)
 
 	local seller_comm = character_community(seller)
 	local rep = rep_factor(seller_comm)
+	local pr = player_rank_factor()
 	local jitter = 1 + (math.random() * 2 - 1) * spread
 
-	local raw = base * diff_factor * rep * jitter
+	local raw = base * diff_factor * rep * pr * jitter
 	local price = math.floor(math.max(raw, minp) + 0.5)
-	dlog("price vid %s: base=%s diff=%.2f rep=%.2f jit=%.2f raw=%d -> %d (min %s)",
-		tostring(vid), tostring(base), diff_factor, rep, jitter, math.floor(raw), price, tostring(minp))
+	dlog("price vid %s: base=%s diff=%.2f rep=%.2f prank=%.2f jit=%.2f raw=%d -> %d (min %s)",
+		tostring(vid), tostring(base), diff_factor, rep, pr, jitter, math.floor(raw), price, tostring(minp))
 
 	price_cache[vid] = price
 	return price
