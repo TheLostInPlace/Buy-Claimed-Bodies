@@ -480,16 +480,22 @@ end
 -- free loot a claimed body while the claimer is too far to stop you, with a
 -- chance to turn nearby faction members hostile, see MCM chance and radius
 local function alert_faction(faction)
-	if math.random() > (tonumber(get_cfg("alert_chance")) or 0.5) then return end
+	if math.random() > (tonumber(get_cfg("alert_chance")) or 0.5) then
+		dlog("alert_faction %s: roll failed, no alert", tostring(faction))
+		return
+	end
 	local actor = db.actor
 	local radius = tonumber(get_cfg("alert_radius")) or 30
+	local hit = 0
 	level.iterate_nearest(actor:position(), radius, function(o)
 		if o and o:id() ~= AC_ID and o:alive() and IsStalker(o)
 			and character_community(o) == faction then
 			o:force_set_goodwill(-5000, actor)
+			hit = hit + 1
 		end
 		return false
 	end)
+	dlog("alert_faction %s: turned %s nearby members hostile within %sm", tostring(faction), tostring(hit), tostring(radius))
 end
 
 -- ret_value does not reliably block the loot window, so we hook
@@ -562,7 +568,11 @@ local function ui_loot_hook(mode, obj)
 	if mode == "loot" and obj then
 		local action, seller, id = decide_loot(obj)
 		if action then
-			if not action_throttled(id) then do_loot_action(action, seller, obj, id) end
+			if action_throttled(id) then
+				dlog("loot hook %s: throttled duplicate (%s)", tostring(id), tostring(action))
+			else
+				do_loot_action(action, seller, obj, id)
+			end
 			return
 		end
 	end
@@ -574,7 +584,11 @@ local function ui_mutant_loot_hook(obj, ...)
 	if obj then
 		local action, seller, id = decide_loot(obj)
 		if action then
-			if not action_throttled(id) then do_loot_action(action, seller, obj, id) end
+			if action_throttled(id) then
+				dlog("mutant loot hook %s: throttled duplicate (%s)", tostring(id), tostring(action))
+			else
+				do_loot_action(action, seller, obj, id)
+			end
 			return
 		end
 	end
@@ -697,6 +711,7 @@ function dlg_list_header(a, b)
 	if not npc then return "" end
 	local id = npc:id()
 	local list = ensure_list(npc)
+	dlog("dlg hub: npc %s, %s bodies, last_buy_ok=%s", tostring(id), tostring(list and #list or 0), tostring(dlg_last_id == id and dlg_last_ok))
 	if (not list) or #list == 0 then
 		if dlg_last_id == id and dlg_last_ok == true then
 			return game.translate_string("npc_loot_buy_talk_list_empty")
@@ -765,6 +780,9 @@ function load_state(m_data)
 	bought = m_data.npc_loot_buy_bought or {}
 	stolen = m_data.npc_loot_buy_stolen or {}
 	pending_body = nil
+	local function count(t) local n = 0; for _ in pairs(t) do n = n + 1 end; return n end
+	dlog("load_state: claims=%s victims=%s bought=%s stolen=%s prices=%s",
+		count(claims), count(victim_info), count(bought), count(stolen), count(price_cache))
 end
 
 function on_game_start()
