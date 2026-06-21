@@ -1,0 +1,88 @@
+-- Make NPCs respect claims: an NPC will not loot a body claimed by a different
+-- NPC. Off by default. Wraps the corpse selector in More Aggressive NPC Looting
+-- (xr_corpse_detection.evaluator_corpse.find_valid_target) and reuses its own
+-- corpse_already_selected lock to mask claimed bodies during each NPC's scan,
+-- then restores the lock so global state stays clean. No-op if that mod is absent.
+--
+-- AlifePlus 1.7.7+ ships its own corpse loot ownership (ap_ext_loot_claim). It is
+-- a competing reservation system, so while its loot ownership is on we disable
+-- ours and warn once, to avoid two systems fighting over the same corpses.
+
+local DEFAULTS = { npc_respect_claims = false, npc_owner_loots = true }
+
+local function get_cfg(key)
+	if z_npc_loot_buy_mcm and z_npc_loot_buy_mcm.get_config then
+		local v = z_npc_loot_buy_mcm.get_config(key)
+		if v ~= nil then return v end
+	end
+	return DEFAULTS[key]
+end
+
+local function alifeplus_loot_on()
+	return ap_core_mcm and ap_core_mcm.cfg and ap_core_mcm.cfg.loot_enabled == true
+end
+
+local warned = false
+local function warn_conflict()
+	if warned then return end
+	warned = true
+	if actor_menu and actor_menu.set_msg then
+		actor_menu.set_msg(1, game.translate_string("st_npc_loot_buy_alifeplus_warn"), 8)
+	end
+	if z_npc_loot_buy and z_npc_loot_buy.dbglog then
+		z_npc_loot_buy.dbglog("npc claim respect disabled: AlifePlus loot_enabled is on")
+	end
+end
+
+-- true when our NPC claim respect should actually run
+local function respect_active()
+	if get_cfg("npc_respect_claims") ~= true then return false end
+	if alifeplus_loot_on() then warn_conflict(); return false end
+	return true
+end
+
+function on_game_start()
+	if xr_corpse_detection and xr_corpse_detection.__npc_loot_buy_respect_hooked then return end
+	if not (xr_corpse_detection and xr_corpse_detection.evaluator_corpse
+		and xr_corpse_detection.evaluator_corpse.find_valid_target) then
+		return
+	end
+
+	local base_find = xr_corpse_detection.evaluator_corpse.find_valid_target
+	xr_corpse_detection.evaluator_corpse.find_valid_target = function(self)
+		if not respect_active() then return base_find(self) end
+
+		local claims = z_npc_loot_buy and z_npc_loot_buy.claims
+		local npc = self and self.object
+		local npcid = npc and npc:id()
+		if not (claims and npcid) then return base_find(self) end
+
+		-- when owner_loots is off, no NPC loots a claimed body, so block all of
+		-- them, otherwise block only bodies claimed by a different NPC
+		local owner_loots = get_cfg("npc_owner_loots") ~= false
+		local masked = {}
+		for vid, kid in pairs(claims) do
+			if (kid ~= npcid) or (not owner_loots) then
+				local st = db.storage[vid]
+				if st and st.corpse_already_selected == nil then
+					st.corpse_already_selected = -1
+					masked[#masked + 1] = vid
+				end
+			end
+		end
+
+		local ok, r = pcall(base_find, self)
+
+		for i = 1, #masked do
+			local st = db.storage[masked[i]]
+			if st and st.corpse_already_selected == -1 then
+				st.corpse_already_selected = nil
+			end
+		end
+
+		if ok then return r end
+		return false
+	end
+
+	xr_corpse_detection.__npc_loot_buy_respect_hooked = true
+end

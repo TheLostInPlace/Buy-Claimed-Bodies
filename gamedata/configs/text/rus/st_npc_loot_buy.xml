@@ -411,4 +411,19 @@
 	<string id="st_npc_loot_buy_mutant">
 		<text>Мутант</text>
 	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_respect_claims">
+		<text>НПС уважают права на добычу</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_respect_claims_desc">
+		<text>Если включено, НПС не обыскивает тело, которое застолбил другой НПС. Нужен мод More Aggressive NPC Looting. Автоматически отключается, пока в AlifePlus включено владение трупами, так как это конкурирующая система.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_owner_loots">
+		<text>Хозяин может обыскать свою добычу</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_owner_loots_desc">
+		<text>Если включено, НПС, совершивший убийство, может обыскать своё тело. Выключите, чтобы занятые тела оставались нетронутыми, пока вы их не выкупите.</text>
+	</string>
+	<string id="st_npc_loot_buy_alifeplus_warn">
+		<text>Уважение прав НПС отключено, пока включено владение трупами AlifePlus. Отключите одно из двух.</text>
+	</string>
 </string_table>

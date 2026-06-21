@@ -79,6 +79,10 @@
 	<string id="st_npc_loot_buy_mutant">
 		<text>Mutant</text>
 	</string>
+	<!-- shown once when NPC claim respect is on but AlifePlus loot ownership is too -->
+	<string id="st_npc_loot_buy_alifeplus_warn">
+		<text>NPC claim respect is off while AlifePlus loot ownership is on. Disable one of them.</text>
+	</string>
 
 	<!-- Corpse prompt suffix shown by the Interaction Dot Marks patch -->
 	<string id="st_npc_loot_buy_bought">
@@ -407,6 +411,19 @@
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_radius_desc">
 		<text>How close faction members must be to notice you and turn hostile when you loot for free.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_npc_respect_claims">
+		<text>NPCs respect claims</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_respect_claims_desc">
+		<text>When on, an NPC will not loot a body that a different NPC claimed by killing it. Needs More Aggressive NPC Looting. Disabled automatically while AlifePlus loot ownership is on, since that is a competing system.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_owner_loots">
+		<text>Owner can loot its kill</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_npc_owner_loots_desc">
+		<text>When on, the NPC that made the kill can still loot its own body. Turn off to keep every claimed body untouched until you buy it.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_pda_notify">

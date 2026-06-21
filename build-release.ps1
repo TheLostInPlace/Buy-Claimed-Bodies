@@ -68,6 +68,12 @@ Write-Host "built $zipPath"
 if ($Publish) {
     $dirty = git -C $root status --porcelain
     if ($dirty) { Write-Warning "working tree has uncommitted changes, the tag $tag will point at the last commit" }
-    gh release create $tag $zipPath --repo $repo --title $tag --notes "Release $tag"
+    $notes = @"
+Release $tag
+
+## Compatibility
+AlifePlus 1.7.7+ ships its own corpse loot ownership (ap_ext_loot_claim) that overlaps this mod. Turn AlifePlus loot ownership off in its MCM (economy, loot) when using this mod. AlifePlus 1.7.6 and earlier are unaffected.
+"@
+    gh release create $tag $zipPath --repo $repo --title $tag --notes "$notes"
     Write-Host "published release $tag"
 }

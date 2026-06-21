@@ -13,6 +13,7 @@ When an NPC kills another NPC it claims the body. Instead of only being warned o
 * Per faction seller personalities with a post Soviet, Ukrainian leaning tone (loners, bandits, Duty, Freedom, Clear Sky, mercs, military, ecologists, Monolith, renegades, Sin, UNISG)
 * Corpse labels: claimed bodies read "(Claimed)", bought bodies "(Bought)", free looted bodies "(Stolen)"
 * PDA notifications with the seller's name and face, so you know who to find
+* Optional: make NPCs respect claims too, so an NPC will not loot a body that a different NPC killed (off by default, needs More Aggressive NPC Looting)
 * Russian localization included
 * Fully configurable through MCM
 
@@ -57,6 +58,10 @@ No hard dependencies. These are detected at runtime and used when present:
 * Interaction Dot Marks: draws the (Claimed), (Bought) and (Stolen) labels on the corpse in the world. Without it the status shows as a brief on screen line when you look at the body.
 * MCM: the configuration menu. Without it the built in defaults in z_npc_loot_buy_mcm.script are used.
 * PDA notifications use the game's news helper, with an on screen message as fallback.
+
+### Known conflicts
+
+* **AlifePlus 1.7.7+** ships its own corpse loot ownership (`ap_ext_loot_claim`) that overlaps this mod. With both on you get inconsistent results, a buy prompt from this mod on some bodies and an item take denial from AlifePlus on others, because they track ownership in separate ledgers. Turn AlifePlus loot ownership off in its MCM (**economy, loot**) when using this mod. AlifePlus 1.7.6 and earlier do not have it. The optional "NPCs respect claims" feature disables itself automatically while AlifePlus loot ownership is on.
 
 ## Install
 
