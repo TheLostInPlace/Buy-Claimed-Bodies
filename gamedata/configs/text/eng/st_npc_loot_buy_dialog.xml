@@ -21,6 +21,15 @@
 	<string id="npc_loot_buy_talk_thatsall">
 		<text>That's all, thanks.</text>
 	</string>
+	<string id="npc_loot_buy_talk_haggle">
+		<text>Come on now, talk me down a little.</text>
+	</string>
+	<string id="npc_loot_buy_talk_haggle_ok">
+		<text>Hah. Fine, I knocked a bit off. For you.</text>
+	</string>
+	<string id="npc_loot_buy_talk_haggle_no">
+		<text>Push your luck and the price climbs, not the other way round.</text>
+	</string>
 	<string id="npc_loot_buy_talk_deal">
 		<text>Deal. Here's your coin.</text>
 	</string>

@@ -77,4 +77,13 @@
 	<string id="npc_loot_buy_talk_thatsall">
 		<text>Это всё, спасибо.</text>
 	</string>
+	<string id="npc_loot_buy_talk_haggle">
+		<text>Ну же, уступи немного в цене.</text>
+	</string>
+	<string id="npc_loot_buy_talk_haggle_ok">
+		<text>Ха. Ладно, скинул немного. Для тебя.</text>
+	</string>
+	<string id="npc_loot_buy_talk_haggle_no">
+		<text>Будешь напирать, и цена пойдёт вверх, а не вниз.</text>
+	</string>
 </string_table>

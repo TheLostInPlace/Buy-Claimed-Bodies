@@ -106,6 +106,34 @@
 		<text>You strip a body that %s had claimed. No coin changed hands.</text>
 	</string>
 
+	<!-- At-the-body haggle.  offer/ok take %s = price -->
+	<string id="st_npc_loot_buy_haggle_offer">
+		<text>He wants %s RU for it. Try to talk him down?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok">
+		<text>You talk him down to %s RU.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no">
+		<text>He did not take kindly to that. The price went up.</text>
+	</string>
+
+	<!-- Shady seller shoves you off instead of dealing, per faction -->
+	<string id="st_npc_loot_buy_betray_bandit">
+		<text>Get lost, gopnik. Body stays with me, and so does your coin if you push it.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_renegade">
+		<text>Off you crawl, freak, before I change my mind about leaving you breathing.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_killer">
+		<text>Deal is off. Walk away now, while walking is still on the table.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_greh">
+		<text>The flesh is not for the likes of you. Leave, before the Sin takes interest.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_generic">
+		<text>Not happening. Get out of my sight before I lose my patience.</text>
+	</string>
+
 	<!-- ====================================================================
 	     FACTION personalities. prompt_*: %s name, %s price ; done_*: %s name
 	     ==================================================================== -->
@@ -437,6 +465,37 @@
 	</string>
 	<string id="ui_mcm_npc_loot_buy_npc_owner_loots_desc">
 		<text>When on, the NPC that made the kill can still loot its own body. Turn off to keep every claimed body untouched until you buy it.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_steal_consequences">
+		<text>Stealing has consequences</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_consequences_desc">
+		<text>When on, free looting a claimed body lowers your goodwill with that faction. Steal enough of their kills and they stop dealing with you.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty">
+		<text>Stealing goodwill loss</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty_desc">
+		<text>How much faction goodwill you lose each time you free loot one of their kills.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_haggle_enable">
+		<text>Allow haggling</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_haggle_enable_desc">
+		<text>When on, you can try to talk the price down before buying, once per body. A higher rank and better standing improve your odds.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray">
+		<text>Shady sellers can betray you</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray_desc">
+		<text>When on, bandits, renegades, mercs and Sin may shove you off and refuse the deal instead of selling. They do not turn hostile, they just rough you up and tell you to leave.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray_chance">
+		<text>Shady betrayal chance</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray_chance_desc">
+		<text>Base chance a shady seller betrays the deal. Lower if they like you, higher if they do not.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_pda_notify">

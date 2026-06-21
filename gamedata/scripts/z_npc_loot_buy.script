@@ -11,6 +11,7 @@ victim_info = victim_info or {}   -- [vid] = { mutant, lvl, tier | rname, rnum }
 claims      = claims or {}        -- [victim_id] = killer_id, our own claim record
 bought      = bought or {}
 stolen      = stolen or {}
+haggled     = haggled or {}       -- [victim_id] = true, price already negotiated, no re-haggle
 
 local pending_body                -- talk to killer mode, last inspected body
 local dialog_open = false
@@ -27,6 +28,9 @@ local FACTIONS = { -- factions with their own personality lines
 	killer = true, army = true, ecolog = true, monolith = true,
 	renegade = true, greh = true, isg = true,
 }
+
+-- factions that might rough you up instead of dealing straight
+local SHADY = { bandit = true, renegade = true, killer = true, greh = true }
 
 -- rank_name tier to a human price bonus, scaled by rank_weight. 8 tiers from
 -- game_relations.ltx [game_relations] rating, ascending
@@ -149,6 +153,15 @@ local MCM_DEFAULTS = {
 	alert_on_far_loot = false,
 	alert_chance      = 0.5,
 	alert_radius      = 30,
+	steal_consequences   = true,
+	steal_goodwill_penalty = 300,
+	haggle_enable     = true,
+	haggle_discount   = 0.15,
+	haggle_penalty    = 0.10,
+	haggle_base       = 0.4,
+	shady_betray      = true,
+	shady_betray_chance = 0.12,
+	shady_melee_power = 0.08,
 	pda_notify        = true,
 	debug             = false,
 }
@@ -367,6 +380,72 @@ local function faction_refuses(faction)
 	return faction_goodwill(faction) <= thr
 end
 
+-- the actor's own rank tier (rank_name fails on the actor, so use character_rank)
+local PT_INDEX = { novice = 0, trainee = 1, experienced = 2, professional = 3,
+	veteran = 4, expert = 5, master = 6, legend = 7 }
+local function player_tier()
+	local actor = db.actor
+	local rnum = (actor and actor.character_rank and actor:character_rank()) or 0
+	return rank_from_value(rnum)
+end
+
+local function is_shady(comm)
+	return comm and SHADY[comm] == true
+end
+
+-- a shady seller shoves the actor instead of going hostile: one melee strike with
+-- knockback, sourced from the seller. just the hit, no forced animation, so it is
+-- reliable
+local function melee_warn(seller)
+	local actor = db.actor
+	if not (seller and actor and hit) then return end
+	local h = hit()
+	h.draftsman = seller
+	h.type = hit.strike
+	h.power = tonumber(get_cfg("shady_melee_power")) or 0.08
+	h.impulse = 260
+	h.direction = vector():set(actor:position()):sub(seller:position()):normalize()
+	actor:hit(h)
+end
+
+-- shady factions may screw you on the deal, more so the less they think of you
+local function shady_betray_roll(comm)
+	if get_cfg("shady_betray") ~= true or not is_shady(comm) then return false end
+	local chance = tonumber(get_cfg("shady_betray_chance")) or 0.12
+	local gw = faction_goodwill(comm)
+	if gw > 500 then chance = chance * 0.5 end
+	if gw < -200 then chance = chance * 1.5 end
+	return math.random() < chance
+end
+
+local function betray_line(comm)
+	local id = (comm and SHADY[comm]) and ("st_npc_loot_buy_betray_" .. comm) or "st_npc_loot_buy_betray_generic"
+	return game.translate_string(id)
+end
+
+-- chance to talk a price down. better rank and standing help
+local function haggle_chance(comm)
+	local base = tonumber(get_cfg("haggle_base")) or 0.4
+	local rankb = (PT_INDEX[player_tier()] or 0) / 7 * 0.3
+	local repb = clamp(faction_goodwill(comm) / 2000, -0.2, 0.2)
+	return clamp(base + rankb + repb, 0.05, 0.95)
+end
+
+-- adjust a body's cached price after a haggle and lock it so it cannot be re-rolled
+local function apply_haggle(vid, ok)
+	if not vid or haggled[vid] then return end
+	local p = price_cache[vid]
+	if not p then return end
+	if ok then
+		p = p * (1 - (tonumber(get_cfg("haggle_discount")) or 0.15))
+	else
+		p = p * (1 + (tonumber(get_cfg("haggle_penalty")) or 0.10))
+	end
+	price_cache[vid] = math.floor(math.max(p, tonumber(get_cfg("min_price")) or 100) + 0.5)
+	haggled[vid] = true
+	dlog("haggle: body %s %s -> %s", tostring(vid), ok and "down" or "up", tostring(price_cache[vid]))
+end
+
 -- purchase
 
 -- silent = true skips on screen messages, the dialogue shows the result instead
@@ -378,6 +457,14 @@ function do_purchase(victim_id, seller_id, seller_comm, price, silent)
 	local sname = (seller and seller:character_name()) or game.translate_string("st_npc_loot_buy_someone")
 	dlog("do_purchase: body %s from %s (%s) price %s money %s silent %s",
 		tostring(victim_id), sname, tostring(seller_comm), tostring(price), tostring(actor:money()), tostring(silent))
+
+	-- shady seller may rough you up and tell you to get lost instead of dealing
+	if seller and seller:alive() and shady_betray_roll(seller_comm) then
+		dlog("do_purchase: shady betrayal by %s (%s)", sname, tostring(seller_comm))
+		melee_warn(seller)
+		notify(betray_line(seller_comm), seller, false)
+		return false
+	end
 
 	if actor:money() < price then
 		dlog("do_purchase: REFUSED, cannot afford")
@@ -464,17 +551,53 @@ function npc_loot_buy_dialog:__init() super()
 	self:Register(self.okbox, "npc_loot_buy_okbox")
 	self:AddCallback("npc_loot_buy_okbox", ui_events.MESSAGE_BOX_OK_CLICKED, self.OnOk, self)
 	self.okbox:InitMessageBox("message_box_ok")
+
+	-- a "talk him down" prompt shown before the buy prompt when haggling is on
+	self.hbox = CUIMessageBoxEx()
+	self:Register(self.hbox, "npc_loot_buy_hbox")
+	self:AddCallback("npc_loot_buy_hbox", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnHaggleYes, self)
+	self:AddCallback("npc_loot_buy_hbox", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnHaggleNo, self)
+	self.hbox:InitMessageBox("message_box_yes_no")
 end
 
 function npc_loot_buy_dialog:Prompt(victim_id, seller_id, seller_name, seller_comm, price)
 	self.victim_id = victim_id
 	self.seller_id = seller_id
+	self.seller_name = seller_name
 	self.seller_comm = seller_comm
 	self.price = price
 
-	self.box:SetText(faction_flavour("prompt", seller_comm, seller_name, tostring(price)))
+	-- offer to haggle first, once per body
+	if get_cfg("haggle_enable") == true and not haggled[victim_id] then
+		self.hbox:SetText(strformat(game.translate_string("st_npc_loot_buy_haggle_offer"), tostring(price)))
+		dialog_open = true
+		self.hbox:ShowDialog(true)
+	else
+		self:ShowBuy()
+	end
+end
+
+function npc_loot_buy_dialog:ShowBuy()
+	self.box:SetText(faction_flavour("prompt", self.seller_comm, self.seller_name or "", tostring(self.price)))
 	dialog_open = true
 	self.box:ShowDialog(true)
+end
+
+function npc_loot_buy_dialog:OnHaggleYes()
+	dialog_open = false
+	local ok = math.random() < haggle_chance(self.seller_comm)
+	apply_haggle(self.victim_id, ok)
+	self.price = price_cache[self.victim_id] or self.price
+	local seller = level.object_by_id(self.seller_id)
+	local msg = ok and strformat(game.translate_string("st_npc_loot_buy_haggle_ok"), tostring(self.price))
+		or game.translate_string("st_npc_loot_buy_haggle_no")
+	notify(msg, seller, false)
+	self:ShowBuy()
+end
+
+function npc_loot_buy_dialog:OnHaggleNo()
+	dialog_open = false
+	self:ShowBuy()
 end
 
 function npc_loot_buy_dialog:OnYes()
@@ -555,6 +678,13 @@ local function decide_loot(obj)
 	if too_far then
 		if get_cfg("loot_when_far") then
 			if get_cfg("alert_on_far_loot") then alert_faction(comm) end
+			-- stealing the kill sours the faction toward you, drop them low enough
+			-- and faction_refuses kicks in and they stop dealing with you
+			if get_cfg("steal_consequences") and relation_registry and relation_registry.change_community_goodwill then
+				local pen = tonumber(get_cfg("steal_goodwill_penalty")) or 300
+				relation_registry.change_community_goodwill(comm, AC_ID, -pen)
+				dlog("steal: %s goodwill -%s, now %s", comm, tostring(pen), tostring(faction_goodwill(comm)))
+			end
 			stolen[id] = true
 			release_claim(id)
 			nudge_body_mark(id)
@@ -634,6 +764,8 @@ local dlg_lists = {}  -- [npc_id] = ordered body entries, built per conversation
 local dlg_last_id     -- npc whose last purchase result the hub line should report
 local dlg_last_ok     -- true bought, false too poor, nil nothing bought yet
 local dlg_last_price
+local dlg_haggle_id   -- npc whose last haggle result the hub line should report
+local dlg_haggle_ok   -- true talked it down, false took offense, nil not tried
 
 local function faction_nokill_line(comm)
 	local id = (comm and FACTIONS[comm]) and ("npc_loot_buy_nokill_" .. comm)
@@ -728,7 +860,32 @@ local function slot_buy(a, b, n)
 	dlog("slot_buy: npc %s slot %s body %s price %s", tostring(id), tostring(n), tostring(e.vid), tostring(e.price))
 	dlg_last_ok = do_purchase(e.vid, id, character_community(npc), e.price, true)
 	dlg_last_id, dlg_last_price = id, e.price
+	dlg_haggle_id = nil  -- a purchase result supersedes any haggle line
 	dlg_lists[id] = nil  -- rebuild on the way back to the hub so the bought body drops off
+end
+
+-- the "talk them down" option, shown only while there is an un-haggled body
+function dlg_can_haggle(a, b)
+	if get_cfg("haggle_enable") ~= true then return false end
+	local npc = dialogs.who_is_npc(a, b)
+	local list = npc and ensure_list(npc)
+	if not list then return false end
+	for i = 1, #list do if not haggled[list[i].vid] then return true end end
+	return false
+end
+
+-- one roll, applied to every un-haggled body this seller has on offer
+function dlg_haggle(a, b)
+	local npc = dialogs.who_is_npc(a, b)
+	if not npc then return end
+	local id = npc:id()
+	local list = ensure_list(npc)
+	if not list then return end
+	local ok = math.random() < haggle_chance(character_community(npc))
+	for i = 1, #list do apply_haggle(list[i].vid, ok) end
+	dlg_haggle_id, dlg_haggle_ok = id, ok
+	dlg_last_id = nil  -- a haggle result supersedes the previous buy line
+	dlg_lists[id] = nil  -- rebuild so the menu shows the new prices
 end
 
 function dlg_available()
@@ -748,6 +905,9 @@ function dlg_list_header(a, b)
 		end
 		return faction_nokill_line(character_community(npc))
 	end
+	if dlg_haggle_id == id and dlg_haggle_ok ~= nil then
+		return game.translate_string(dlg_haggle_ok and "npc_loot_buy_talk_haggle_ok" or "npc_loot_buy_talk_haggle_no")
+	end
 	if dlg_last_id == id and dlg_last_ok ~= nil then
 		if dlg_last_ok then return game.translate_string("npc_loot_buy_talk_list_more") end
 		return flavour("st_npc_loot_buy_poor_", POOR_N, tostring(dlg_last_price or 0))
@@ -762,6 +922,7 @@ end
 function on_actor_leave_dialog()
 	dlg_lists = {}
 	dlg_last_id, dlg_last_ok, dlg_last_price = nil, nil, nil
+	dlg_haggle_id, dlg_haggle_ok = nil, nil
 end
 
 -- death recorder, store rank for humans or tier for mutants plus the level so a
@@ -801,6 +962,7 @@ function save_state(m_data)
 	m_data.npc_loot_buy_claims = claims
 	m_data.npc_loot_buy_bought = bought
 	m_data.npc_loot_buy_stolen = stolen
+	m_data.npc_loot_buy_haggled = haggled
 end
 
 function load_state(m_data)
@@ -809,6 +971,7 @@ function load_state(m_data)
 	claims = m_data.npc_loot_buy_claims or {}
 	bought = m_data.npc_loot_buy_bought or {}
 	stolen = m_data.npc_loot_buy_stolen or {}
+	haggled = m_data.npc_loot_buy_haggled or {}
 	pending_body = nil
 	local function count(t) local n = 0; for _ in pairs(t) do n = n + 1 end; return n end
 	dlog("load_state: claims=%s victims=%s bought=%s stolen=%s prices=%s",

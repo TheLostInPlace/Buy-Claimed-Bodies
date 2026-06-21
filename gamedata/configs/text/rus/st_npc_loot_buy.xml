@@ -438,4 +438,58 @@
 	<string id="ui_mcm_npc_loot_buy_player_rank_weight_desc">
 		<text>Насколько сильно ваш ранг двигает цену. При 1.0 новичок платит примерно на 20% больше, а легенда примерно на 45% меньше. 0 не учитывает ранг.</text>
 	</string>
+	<string id="st_npc_loot_buy_haggle_offer">
+		<text>Он хочет за него %s RU. Попробовать сбить цену?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok">
+		<text>Ты сбил цену до %s RU.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no">
+		<text>Ему это не понравилось. Цена выросла.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_bandit">
+		<text>Вали отсюда, гопник. Тело моё, и монеты твои тоже станут моими, если будешь напирать.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_renegade">
+		<text>Ползи прочь, урод, пока я не передумал оставлять тебя в живых.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_killer">
+		<text>Сделки не будет. Уходи сейчас, пока ноги ещё держат.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_greh">
+		<text>Плоть не для таких, как ты. Уходи, пока Грех не заинтересовался тобой.</text>
+	</string>
+	<string id="st_npc_loot_buy_betray_generic">
+		<text>Не выйдет. Уйди с глаз, пока я не вышел из себя.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_consequences">
+		<text>У воровства есть последствия</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_consequences_desc">
+		<text>Если включено, обыск занятого тела без оплаты снижает вашу репутацию с этой фракцией. Украдёте достаточно их добычи, и они перестанут с вами торговать.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty">
+		<text>Потеря репутации за воровство</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty_desc">
+		<text>Сколько репутации с фракцией вы теряете каждый раз, когда обыскиваете одно из их тел без оплаты.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_haggle_enable">
+		<text>Разрешить торг</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_haggle_enable_desc">
+		<text>Если включено, перед покупкой можно попробовать сбить цену, один раз на тело. Высокий ранг и хорошая репутация повышают шансы.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray">
+		<text>Тёмные торговцы могут вас кинуть</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray_desc">
+		<text>Если включено, бандиты, ренегаты, наёмники и Грех могут оттолкнуть вас и отказать в сделке вместо продажи. Они не становятся враждебными, просто пихнут и велят уйти.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray_chance">
+		<text>Шанс кидалова</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_shady_betray_chance_desc">
+		<text>Базовый шанс, что тёмный торговец кинет вас на сделке. Меньше, если вы им нравитесь, больше, если нет.</text>
+	</string>
 </string_table>
