@@ -161,7 +161,7 @@ local MCM_DEFAULTS = {
 	haggle_base       = 0.4,
 	shady_betray      = true,
 	shady_betray_chance = 0.12,
-	shady_melee_power = 0.08,
+	shady_melee_power = 0.01,
 	pda_notify        = true,
 	debug             = false,
 }
@@ -399,10 +399,12 @@ end
 local function melee_warn(seller)
 	local actor = db.actor
 	if not (seller and actor and hit) then return end
+	-- power is tiny on purpose, just enough to register the hit and its screen
+	-- shake, the impulse does the visible jolt of being shoved
 	local h = hit()
 	h.draftsman = seller
 	h.type = hit.strike
-	h.power = tonumber(get_cfg("shady_melee_power")) or 0.08
+	h.power = tonumber(get_cfg("shady_melee_power")) or 0.01
 	h.impulse = 260
 	h.direction = vector():set(actor:position()):sub(seller:position()):normalize()
 	actor:hit(h)
