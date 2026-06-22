@@ -11,7 +11,7 @@ When an NPC kills another NPC it claims the body. Instead of only being warned o
 * Dynamic pricing that varies by the victim's rank, the claiming faction's opinion of you, and a small fixed random factor
 * Mutant bodies priced by difficulty tier and where they died (map danger)
 * Per faction seller personalities with a post Soviet, Ukrainian leaning tone (loners, bandits, Duty, Freedom, Clear Sky, mercs, military, ecologists, Monolith, renegades, Sin, UNISG)
-* Corpse labels: claimed bodies read "(Claimed)", bought bodies "(Bought)", free looted bodies "(Stolen)"
+* Corpse labels: claimed bodies read "(Claimed)", bought bodies "(Bought)", stolen bodies "(Stolen)"
 * PDA notifications with the seller's name and face, so you know who to find
 * Bought bodies are marked with an X on the PDA map and minimap so you can find them, even one bought from a killer while the body lies across the map. The mark clears when you loot it
 * Buy all: when a killer has claimed several bodies, the talk menu offers a single option to buy the lot at once, at a small bundle discount
@@ -50,16 +50,18 @@ price = base x difficulty tier x map danger x reputation factor x random jitter
 
 Optional loot value pricing (off by default, set the loot value weight above 0):
 
-* A body's gear adds a premium on top of the rank price. Weapons are valued the GAMMA way, by their parts times condition, so a green barrel is the prize and a busted weapon is worth nothing. Artifacts are valued by their cost, the one thing still worth real coin
+* A body's gear adds a premium on top of the rank price. Weapons are valued the GAMMA way, by their parts times condition, so a green barrel is the prize and a busted weapon is worth nothing. Artifacts are valued by their cost, the one thing still worth real roubles
 * Separate weights for the weapon parts (barrel) and for artifacts, so you tune what matters
 * Read once at the kill while the body is online, so it still prices right when you buy it offline from the killer. Weapon part values use Weapon Parts Overhaul, which GAMMA ships
 
 Optional "take it anyway" play, both off by default:
 
-* Loot for free when the claimer is too far to stop you
-* Free looting can alert the faction, with a configurable chance to turn nearby members hostile
+* Steal the body when the claimer is too far to stop you. This is not free, it costs you goodwill with their faction
+* Stealing can alert the faction, with a configurable chance to turn nearby members hostile
 
-Everything (base and minimum price, rank, mutant and map danger weights, reputation influence, random spread, refuse to sell threshold, deal range, free loot and alert options, haggling, shady betrayal, no deals mid-combat, bulk buyout, claim expiry and its lifetime, map marks, interaction mode, PDA notifications, master switch) is configurable in MCM under "Loot Claim Buyout".
+Optional confirm popup (off by default): show claimed-body actions as a modal popup instead of a brief on screen line, including a yes or no warning before you steal a claimed body and a notice naming who claimed it. Made for playing with PDA notifications and corpse dot marks off.
+
+Everything (base and minimum price, rank, mutant and map danger weights, reputation influence, loot value weights, random spread, refuse to sell threshold, deal range, stealing and alert options, haggling, shady betrayal, no deals mid-combat, bulk buyout, claim expiry and its lifetime, map marks, confirm popup, deal sound, interaction mode, PDA notifications, master switch) is configurable in MCM under "Loot Claim Buyout".
 
 ## Compatibility
 
@@ -69,6 +71,8 @@ No hard dependencies. These are detected at runtime and used when present:
 * Interaction Dot Marks: draws the (Claimed), (Bought) and (Stolen) labels on the corpse in the world. Without it the status shows as a brief on screen line when you look at the body.
 * MCM: the configuration menu. Without it the built in defaults in z_npc_loot_buy_mcm.script are used.
 * PDA notifications use the game's news helper, with an on screen message as fallback.
+* Auto-loot mods (Autolooter and similar) are safe: they loot the corpse whose loot window is open, and this addon blocks that window from opening on a claimed body, so they cannot strip one out from under you.
+* The deal sound uses the game's money note sound when an audio mod provides it (most GAMMA installs do), and stays silent otherwise.
 
 ### Known conflicts
 

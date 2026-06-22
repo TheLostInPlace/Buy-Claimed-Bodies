@@ -55,6 +55,44 @@
 		<text>Your pockets are too empty for this deal.</text>
 	</string>
 
+	<!-- ==== Can't afford it, per faction reaction.  %s = price ==== -->
+	<string id="st_npc_loot_buy_poor_stalker_1">
+		<text>Come back when you have the %s RU, stalker.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_bandit_1">
+		<text>%s RU or get lost, nishchebrod. Your pockets are empty.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_dolg_1">
+		<text>No %s RU, no deal. Duty does not run a charity.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_freedom_1">
+		<text>No money, no body. Find the %s RU first, brother.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_csky_1">
+		<text>Clear Sky deals in roubles, not promises. %s RU, or move on.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_killer_1">
+		<text>%s RU up front or nothing. Mercs do not do credit.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_army_1">
+		<text>Pay the %s RU fee or move along.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_ecolog_1">
+		<text>The price is %s RU, and not a rouble less. Come back when you have it.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_monolith_1">
+		<text>%s RU. The Monolith does not haggle with the penniless.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_renegade_1">
+		<text>%s RU, padla. No money, no body.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_greh_1">
+		<text>%s RU. Sin does not give alms.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_isg_1">
+		<text>%s RU, logged. No funds, no transaction.</text>
+	</string>
+
 	<!-- ==== Talk-to-killer hint at the body.  %s = seller name ==== -->
 	<string id="st_npc_loot_buy_goto_1">
 		<text>This kill belongs to %s. Go and speak with them if you want it.</text>
@@ -74,6 +112,10 @@
 
 	<string id="st_npc_loot_buy_someone">
 		<text>the stalker</text>
+	</string>
+	<!-- Header line on the buy prompt, names what you are buying.  %s = name, rank -->
+	<string id="st_npc_loot_buy_buying_label">
+		<text>Body: %s</text>
 	</string>
 	<!-- fallback name for an unnamed mutant in the talk to killer list -->
 	<string id="st_npc_loot_buy_mutant">
@@ -96,14 +138,69 @@
 		<text>Claimed</text>
 	</string>
 
-	<!-- Claimer is alive but too far to deal with (free looting disabled).  %s = seller name -->
-	<string id="st_npc_loot_buy_toofar">
+	<!-- Claimer is alive but too far to deal with (stealing disabled).  %s = seller name -->
+	<string id="st_npc_loot_buy_toofar_1">
 		<text>This kill belongs to %s, who is too far off to deal with.</text>
 	</string>
+	<string id="st_npc_loot_buy_toofar_2">
+		<text>This kill is %s's, and they are too far to haggle with. Hands off for now.</text>
+	</string>
+	<string id="st_npc_loot_buy_toofar_3">
+		<text>%s put this one down, but they are nowhere near. Nothing to do but wait.</text>
+	</string>
 
-	<!-- Free-looting a claimed body without paying.  %s = claimer name -->
-	<string id="st_npc_loot_buy_stole">
-		<text>You strip a body that %s had claimed. No coin changed hands.</text>
+	<!-- Stealing a claimed body without paying.  generic, %s = claimer name -->
+	<string id="st_npc_loot_buy_stole_1">
+		<text>You strip a body that %s had claimed. Not a rouble changed hands.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_2">
+		<text>No deal, no payment. You take what you want and move before %s turns around.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_3">
+		<text>The body is yours now, the hard way. %s will remember this.</text>
+	</string>
+
+	<!-- Stealing, per faction reaction.  %s = claimer name (used by some) -->
+	<string id="st_npc_loot_buy_stole_stalker_1">
+		<text>Even loners have a line, druzhe, and you just crossed it.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_bandit_1">
+		<text>You pick the body clean. Bandits do not forget a thief, khlopche.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_dolg_1">
+		<text>You strip what %s claimed. Duty logs everything, and you are in the ledger now.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_freedom_1">
+		<text>Freedom lets most things slide. Robbing their dead is not one of them.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_csky_1">
+		<text>Clear Sky works in the open, and they will know whose kill you robbed.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_killer_1">
+		<text>Mercs deal in debts. You just took one on, robbing %s.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_army_1">
+		<text>The military does not forget a looted body. You are marked now.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_ecolog_1">
+		<text>The scientists note your acquisition. Coldly, in a file with your name on it.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_monolith_1">
+		<text>You rob the Monolith's dead. They do not bargain, they remember.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_renegade_1">
+		<text>Renegades would rob you the same. Will not stop them being sore about it.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_greh_1">
+		<text>You take what Sin claimed. They keep their own ledger, written in worse ink.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_isg_1">
+		<text>UNISG catalogs everything, including who robbed their fallen. You are in the file.</text>
+	</string>
+
+	<!-- Confirm popup before stealing a claimed body.  %s = claimer name -->
+	<string id="st_npc_loot_buy_steal_confirm">
+		<text>This body is claimed by %s. Stealing it will anger their faction. Take it anyway?</text>
 	</string>
 
 	<!-- Seller is in a firefight and will not deal.  %s = seller name -->
@@ -125,20 +222,38 @@
 		<text>Buy all %s bodies (%s RU)</text>
 	</string>
 
-	<!-- At-the-body haggle.  offer/ok take %s = price -->
-	<string id="st_npc_loot_buy_haggle_offer">
+	<!-- At-the-body haggle.  offer/ok take %s = price, no takes no arg -->
+	<string id="st_npc_loot_buy_haggle_offer_1">
 		<text>He wants %s RU for it. Try to talk him down?</text>
 	</string>
-	<string id="st_npc_loot_buy_haggle_ok">
+	<string id="st_npc_loot_buy_haggle_offer_2">
+		<text>Price is %s RU. Lean on him a little?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_offer_3">
+		<text>He is asking %s RU. Push for less?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok_1">
 		<text>You talk him down to %s RU.</text>
 	</string>
-	<string id="st_npc_loot_buy_haggle_no">
+	<string id="st_npc_loot_buy_haggle_ok_2">
+		<text>He grumbles, knocks it to %s RU. 'Fine, fine.'</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok_3">
+		<text>'You drive a hard bargain.' %s RU and it is done.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no_1">
 		<text>He did not take kindly to that. The price went up.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no_2">
+		<text>He spits. 'Insult me again and it climbs higher.'</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no_3">
+		<text>'Push your luck and you pay more, not less.'</text>
 	</string>
 
 	<!-- Shady seller shoves you off instead of dealing, per faction -->
 	<string id="st_npc_loot_buy_betray_bandit">
-		<text>Get lost, gopnik. Body stays with me, and so does your coin if you push it.</text>
+		<text>Get lost, gopnik. Body stays with me, and so does your money if you push it.</text>
 	</string>
 	<string id="st_npc_loot_buy_betray_renegade">
 		<text>Off you crawl, freak, before I change my mind about leaving you breathing.</text>
@@ -349,7 +464,7 @@
 		<text>- Shady sellers -</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_hdr_stealing">
-		<text>- Stealing (free loot) -</text>
+		<text>- Stealing -</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_hdr_npc">
 		<text>- NPCs respecting claims -</text>
@@ -463,7 +578,7 @@
 		<text>Artifact weight</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_artifact_weight_desc">
-		<text>How much an artifact carried on the body counts toward the price. Artifacts are the one thing still worth real coin, so they push the price up hard.</text>
+		<text>How much an artifact carried on the body counts toward the price. Artifacts are the one thing still worth real roubles, so they push the price up hard.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_random_spread">
@@ -484,35 +599,35 @@
 		<text>Deal range (m)</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_max_dist_desc">
-		<text>How close the claiming NPC must be to deal: within range you get the buy prompt (or the "go find them" hint in talk mode). Beyond it the claimer is too far to stop you. See the free looting option below.</text>
+		<text>How close the claiming NPC must be to deal: within range you get the buy prompt (or the "go find them" hint in talk mode). Beyond it the claimer is too far to stop you. See the stealing option below.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_loot_when_far">
-		<text>Loot for free when the claimer is far</text>
+		<text>Steal the body when the claimer is too far</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_loot_when_far_desc">
-		<text>When on, if the claiming NPC is farther than the deal range you can loot the body for free instead of buying it. When off, the base mod's "too far" behaviour applies.</text>
+		<text>When on, if the claiming NPC is farther than the deal range you can take the body anyway, but this is stealing: it lowers your standing with their faction (see the stealing options below) and can turn nearby members hostile. When off, the body stays blocked until you can deal or the claim expires.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot">
-		<text>Free looting can alert the faction</text>
+		<text>Stealing can alert the faction</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot_desc">
-		<text>When on, looting a claimed body for free has a chance to alert nearby members of that faction to your location, and they turn hostile and come for you.</text>
+		<text>When on, stealing a claimed body has a chance to alert nearby members of that faction to your location, and they turn hostile and come for you.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_alert_chance">
 		<text>Alert chance</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_chance_desc">
-		<text>Probability that free looting gives you away. 0 = never, 1 = always.</text>
+		<text>Probability that stealing gives you away. 0 = never, 1 = always.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_alert_radius">
 		<text>Alert radius (m)</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_radius_desc">
-		<text>How close faction members must be to notice you and turn hostile when you loot for free.</text>
+		<text>How close faction members must be to notice you and turn hostile when you steal a body.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_npc_respect_claims">
@@ -532,13 +647,13 @@
 		<text>Stealing has consequences</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_steal_consequences_desc">
-		<text>When on, free looting a claimed body lowers your goodwill with that faction. Steal enough of their kills and they stop dealing with you.</text>
+		<text>When on, stealing a claimed body lowers your goodwill with that faction. Steal enough of their kills and they stop dealing with you.</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty">
 		<text>Stealing goodwill loss</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty_desc">
-		<text>How much faction goodwill you lose each time you free loot one of their kills.</text>
+		<text>How much faction goodwill you lose each time you steal one of their kills.</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_haggle_enable">
 		<text>Allow haggling</text>
@@ -596,6 +711,20 @@
 	</string>
 	<string id="ui_mcm_npc_loot_buy_map_mark_desc">
 		<text>After you buy a body, an X is placed at it on the PDA map and the minimap so you can find it again. The mark clears once you loot the body.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_confirm_popup">
+		<text>Confirm claimed bodies with a popup</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_confirm_popup_desc">
+		<text>Show a popup when you act on a claimed body, instead of a brief on screen line: a yes or no warning before you steal one, and a notice naming who claimed it. Good if you play with PDA notifications and corpse dot marks off.</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_deal_sound">
+		<text>Deal sound</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_deal_sound_desc">
+		<text>Play a short rouble note sound when a deal closes. Uses the game money sound if your audio mods provide it, silent otherwise.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_debug">

@@ -1,0 +1,188 @@
+-- Pure helpers and data tables for Buy Claimed Bodies. No state, no config, no
+-- actor access, so it can be read and changed on its own. The core script,
+-- z_npc_loot_buy, binds these in on_game_start and calls them by short name.
+
+-- factions with their own personality lines
+local FACTIONS = {
+	stalker = true, bandit = true, dolg = true, freedom = true, csky = true,
+	killer = true, army = true, ecolog = true, monolith = true,
+	renegade = true, greh = true, isg = true,
+}
+
+-- how many flavour lines exist per kind, generic set and per faction set
+local GEN_COUNT = { prompt = 6, done = 5, stole = 3, poor = 4 }
+local FAC_COUNT = { prompt = 2, done = 2, stole = 1, poor = 1 }
+
+-- rank_name tier to a human price bonus, scaled by rank_weight. 8 tiers from
+-- game_relations.ltx [game_relations] rating, ascending
+local RANK_BONUS = {
+	novice       = -0.35,
+	trainee      = -0.15,
+	experienced  =  0.10,
+	professional =  0.35,
+	veteran      =  0.65,
+	expert       =  1.00,
+	master       =  1.45,
+	legend       =  2.00,
+}
+
+-- the actor's own rank to a price modifier, scaled by player_rank_weight. low
+-- rank gets bullied and pays more, high rank is respected and pays less. same
+-- tiers, opposite direction to the victim bonus above
+local PLAYER_RANK_BONUS = {
+	novice       =  0.20,
+	trainee      =  0.10,
+	experienced  =  0.00,
+	professional = -0.05,
+	veteran      = -0.15,
+	expert       = -0.25,
+	master       = -0.35,
+	legend       = -0.45,
+}
+
+-- map a character_rank value to a tier, upper bounds from the same rating list,
+-- used only when a body has no rank name recorded
+local RANK_THRESHOLDS = {
+	{ 1500, "novice" }, { 2500, "trainee" }, { 5500, "experienced" },
+	{ 10000, "professional" }, { 15000, "veteran" }, { 20000, "expert" },
+	{ 30000, "master" },
+}
+
+-- mutant section pattern in order, gives a difficulty tier 1 to 5
+local MUTANT_PATTERNS = {
+	{ "chimera",        5 },
+	{ "pseudo_?gigant", 5 },
+	{ "gigant",         5 },
+	{ "giant",          5 },
+	{ "controller",     4 },
+	{ "burer",          4 },
+	{ "bibliotekar",    4 },
+	{ "poltergeist",    3 },
+	{ "bloodsucker",    3 },
+	{ "psy_?dog",       3 },
+	{ "izlom",          3 },
+	{ "fracture",       3 },
+	{ "snork",          2 },
+	{ "bayun",          2 },
+	{ "cat",            2 },
+	{ "pseudo_?dog",    2 },
+	{ "boar",           2 },
+	{ "flesh",          1 },
+	{ "dog",            1 },
+	{ "tushkano",       1 },
+	{ "rat",            1 },
+	{ "crow",           1 },
+	{ "zombie",         1 },
+}
+local TIER_MULT = { 1.0, 1.6, 2.4, 3.5, 5.0 } -- tier multiplier, scaled by mutant_weight
+
+-- per level danger multiplier, scaled by location_weight, default 1.0
+local LEVEL_DANGER = {
+	l01_escape           = 0.70, -- Cordon
+	k00_marsh            = 0.85, -- Great Swamp
+	l02_garbage          = 0.80, -- Garbage
+	l03_agroprom         = 0.90, -- Agroprom
+	l03u_agr_underground = 1.10,
+	l04_darkvalley       = 1.00, -- Dark Valley
+	l04u_labx18          = 1.30,
+	l05_bar              = 1.00, -- Rostok, Bar
+	l06_rostok           = 1.10, -- Wild Territory
+	l07_military         = 1.20, -- Army Warehouses
+	l08_yantar           = 1.20, -- Yantar
+	l08u_brainlab        = 1.50, -- Lab X16
+	labx8                = 1.60, -- Lab X8
+	l10_radar            = 1.60, -- Radar
+	l10_red_forest       = 1.70, -- Red Forest
+	l10u_bunker          = 1.60,
+	l11_pripyat          = 1.80, -- Pripyat
+	l11_hospital         = 1.80,
+	l12_stancia          = 2.00, -- CNPP
+	l12_stancia_2        = 2.00,
+	l12u_sarcofag        = 2.00,
+	l12u_control_monolith = 2.00,
+	l13u_warlab          = 1.90,
+	jupiter              = 1.10,
+	jupiter_underground  = 1.40,
+	zaton                = 1.00,
+	pripyat              = 1.60,
+}
+
+-- rank value to a tier name, used when a body has no rank name recorded
+function rank_from_value(rnum)
+	for i = 1, #RANK_THRESHOLDS do
+		if (rnum or 0) < RANK_THRESHOLDS[i][1] then return RANK_THRESHOLDS[i][2] end
+	end
+	return "legend"
+end
+
+-- the player rank price bonus for a rank value, kept here so the table stays local
+function player_rank_bonus(rnum)
+	return PLAYER_RANK_BONUS[rank_from_value(rnum)]
+end
+
+function mutant_tier(obj)
+	local sec = obj:section()
+	if not sec then return 2 end
+	sec = sec:lower()
+	for i = 1, #MUTANT_PATTERNS do
+		if string.find(sec, MUTANT_PATTERNS[i][1]) then
+			return MUTANT_PATTERNS[i][2]
+		end
+	end
+	return 2
+end
+
+function mutant_factor(tier, w)
+	local m = TIER_MULT[tier] or 1.6
+	return 1 + (m - 1) * w
+end
+
+function location_factor(lvl, w)
+	local d = (lvl and LEVEL_DANGER[lvl]) or 1.0
+	return 1 + (d - 1) * w
+end
+
+function rank_factor_vals(rname, rnum, w)
+	local bonus = rname and RANK_BONUS[rname]
+	if bonus == nil then bonus = RANK_BONUS[rank_from_value(rnum)] end
+	return math.max(0.25, 1 + bonus * w)
+end
+
+-- pick a random localized line "<prefix><n>" and format it
+function flavour(prefix, count, ...)
+	return strformat(game.translate_string(prefix .. math.random(count)), ...)
+end
+
+-- faction aware prompt, done, stole or poor line, falls back to the generic set
+function faction_flavour(kind, faction, ...)
+	local id
+	if faction and FACTIONS[faction] then
+		id = strformat("st_npc_loot_buy_%s_%s_%s", kind, faction, math.random(FAC_COUNT[kind]))
+	else
+		id = strformat("st_npc_loot_buy_%s_%s", kind, math.random(GEN_COUNT[kind]))
+	end
+	return strformat(game.translate_string(id), ...)
+end
+
+-- the "this NPC has no kills to sell" line, faction aware
+function faction_nokill_line(comm)
+	local id = (comm and FACTIONS[comm]) and ("npc_loot_buy_nokill_" .. comm)
+		or "npc_loot_buy_nokill_generic"
+	return game.translate_string(id)
+end
+
+-- serializable in game timestamp for claim expiry, via the stock utils_data
+-- CTime table converters. time_stamp records now, time_age returns how many
+-- seconds have passed since a recorded stamp
+function time_stamp()
+	if utils_data and utils_data.CTime_to_table and game and game.get_game_time then
+		return utils_data.CTime_to_table(game.get_game_time())
+	end
+	return nil
+end
+
+function time_age(stamp)
+	if not (stamp and utils_data and utils_data.CTime_from_table and game and game.get_game_time) then return 0 end
+	local ok, age = pcall(function() return game.get_game_time():diffSec(utils_data.CTime_from_table(stamp)) end)
+	return (ok and age) or 0
+end

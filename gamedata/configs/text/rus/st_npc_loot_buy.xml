@@ -345,35 +345,35 @@
 		<text>Дистанция сделки (м)</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_max_dist_desc">
-		<text>Насколько близко должен быть хозяин для сделки: в пределах дистанции появляется запрос на покупку (или подсказка "найти убийцу" в режиме поиска). Дальше хозяин слишком далеко, чтобы помешать вам, см. опцию бесплатной обдирки ниже.</text>
+		<text>Насколько близко должен быть хозяин для сделки: в пределах дистанции появляется запрос на покупку (или подсказка "найти убийцу" в режиме поиска). Дальше хозяин слишком далеко, чтобы помешать вам, см. опцию воровства ниже.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_loot_when_far">
-		<text>Забирать даром, когда хозяин далеко</text>
+		<text>Красть тело, когда хозяин слишком далеко</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_loot_when_far_desc">
-		<text>Если включено и хозяин трупа дальше дистанции сделки, тело можно обыскать бесплатно, без выкупа. Если выключено, действует поведение базового мода для случая "слишком далеко".</text>
+		<text>Если включено и хозяин трупа дальше дистанции сделки, тело всё равно можно забрать, но это воровство: оно снижает вашу репутацию с фракцией (см. опции воровства ниже) и может настроить ближайших бойцов против вас. Если выключено, тело остаётся недоступным, пока вы не договоритесь или права не истекут.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot">
-		<text>Бесплатная обдирка может выдать вас</text>
+		<text>Воровство может выдать вас</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_on_far_loot_desc">
-		<text>Если включено, при бесплатной обдирке занятого тела есть шанс, что ближайшие бойцы этой фракции засекут вас, они станут враждебны и пойдут на вас.</text>
+		<text>Если включено, при краже занятого тела есть шанс, что ближайшие бойцы этой фракции засекут вас, они станут враждебны и пойдут на вас.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_alert_chance">
 		<text>Шанс быть замеченным</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_chance_desc">
-		<text>Вероятность того, что бесплатная обдирка выдаст вас. 0, никогда, 1, всегда.</text>
+		<text>Вероятность того, что воровство выдаст вас. 0, никогда, 1, всегда.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_alert_radius">
 		<text>Радиус оповещения (м)</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_alert_radius_desc">
-		<text>В каком радиусе вокруг вас бойцы фракции могут вас засечь и стать враждебными при бесплатной обдирке.</text>
+		<text>В каком радиусе вокруг вас бойцы фракции могут вас засечь и стать враждебными, когда вы крадёте тело.</text>
 	</string>
 
 	<string id="ui_mcm_npc_loot_buy_debug">
@@ -383,9 +383,6 @@
 		<text>Пишет диагностику в appdata\logs\npc_loot_buy_dbg.log и показывает её на экране, чтобы понять, почему запрос на покупку появляется или нет. В обычной игре держите выключенным.</text>
 	</string>
 
-	<string id="st_npc_loot_buy_toofar">
-		<text>Эта добыча принадлежит %s, но он слишком далеко, чтобы договориться.</text>
-	</string>
 
 	<string id="st_npc_loot_buy_bought">
 		<text>Куплено</text>
@@ -398,9 +395,6 @@
 		<text>Занято</text>
 	</string>
 
-	<string id="st_npc_loot_buy_stole">
-		<text>Ты обираешь тело, на которое претендовал %s. Денег ты не платил.</text>
-	</string>
 	<string id="ui_mcm_npc_loot_buy_pda_notify">
 		<text>Уведомления в КПК</text>
 	</string>
@@ -438,17 +432,8 @@
 	<string id="ui_mcm_npc_loot_buy_player_rank_weight_desc">
 		<text>Насколько сильно ваш ранг двигает цену. При 1.0 новичок платит примерно на 20% больше, а легенда примерно на 45% меньше. 0 не учитывает ранг.</text>
 	</string>
-	<string id="st_npc_loot_buy_haggle_offer">
-		<text>Он хочет за него %s RU. Попробовать сбить цену?</text>
-	</string>
-	<string id="st_npc_loot_buy_haggle_ok">
-		<text>Ты сбил цену до %s RU.</text>
-	</string>
-	<string id="st_npc_loot_buy_haggle_no">
-		<text>Ему это не понравилось. Цена выросла.</text>
-	</string>
 	<string id="st_npc_loot_buy_betray_bandit">
-		<text>Вали отсюда, гопник. Тело моё, и монеты твои тоже станут моими, если будешь напирать.</text>
+		<text>Вали отсюда, гопник. Тело моё, и деньги твои тоже станут моими, если будешь напирать.</text>
 	</string>
 	<string id="st_npc_loot_buy_betray_renegade">
 		<text>Ползи прочь, урод, пока я не передумал оставлять тебя в живых.</text>
@@ -466,13 +451,13 @@
 		<text>У воровства есть последствия</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_steal_consequences_desc">
-		<text>Если включено, обыск занятого тела без оплаты снижает вашу репутацию с этой фракцией. Украдёте достаточно их добычи, и они перестанут с вами торговать.</text>
+		<text>Если включено, кража занятого тела снижает вашу репутацию с этой фракцией. Украдёте достаточно их добычи, и они перестанут с вами торговать.</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty">
 		<text>Потеря репутации за воровство</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_steal_goodwill_penalty_desc">
-		<text>Сколько репутации с фракцией вы теряете каждый раз, когда обыскиваете одно из их тел без оплаты.</text>
+		<text>Сколько репутации с фракцией вы теряете каждый раз, когда крадёте одно из их тел.</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_haggle_enable">
 		<text>Разрешить торг</text>
@@ -565,7 +550,7 @@
 		<text>- Тёмные продавцы -</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_hdr_stealing">
-		<text>- Воровство (даром) -</text>
+		<text>- Воровство -</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_hdr_npc">
 		<text>- NPC уважают права -</text>
@@ -589,6 +574,141 @@
 		<text>Вес артефакта</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_artifact_weight_desc">
-		<text>Насколько артефакт на теле влияет на цену. Артефакты единственное, что ещё стоит реальных денег, поэтому они сильно поднимают цену.</text>
+		<text>Насколько артефакт на теле влияет на цену. Артефакты единственное, что ещё стоит реальных рублей, поэтому они сильно поднимают цену.</text>
+	</string>
+	<string id="st_npc_loot_buy_steal_confirm">
+		<text>Это тело занял %s. Если украдёшь его, его фракция разозлится. Всё равно взять?</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_confirm_popup">
+		<text>Подтверждать занятые тела окном</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_confirm_popup_desc">
+		<text>Показывать окно при действии с занятым телом вместо короткой строки на экране: запрос да или нет перед тем как украсть его, и уведомление, кто его занял. Удобно, если играешь с выключенными уведомлениями КПК и метками на телах.</text>
+	</string>
+	<string id="st_npc_loot_buy_toofar_1">
+		<text>Этот труп принадлежит %s, а он слишком далеко, чтобы договариваться.</text>
+	</string>
+	<string id="st_npc_loot_buy_toofar_2">
+		<text>Эту добычу занял %s, и он слишком далеко для торга. Руки прочь пока что.</text>
+	</string>
+	<string id="st_npc_loot_buy_toofar_3">
+		<text>%s свалил его, но сам сейчас далеко. Остаётся только ждать.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_1">
+		<text>Ты обираешь тело, на которое претендовал %s. Ни рубля не перешло из рук в руки.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_2">
+		<text>Ни сделки, ни оплаты. Забираешь что нужно и уходишь, пока %s не обернулся.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_3">
+		<text>Теперь тело твоё, по-плохому. %s это запомнит.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_stalker_1">
+		<text>Даже у одиночек есть черта, друже, и ты её только что переступил.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_bandit_1">
+		<text>Обираешь тело дочиста. Бандиты не прощают вора, хлопче.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_dolg_1">
+		<text>Ты забрал то, что занял %s. Долг всё записывает, и теперь ты в их списке.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_freedom_1">
+		<text>Свобода многое спускает. Но обирать своих мёртвых, это не тот случай.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_csky_1">
+		<text>Чистое Небо работает в открытую, и они узнают, чью добычу ты обобрал.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_killer_1">
+		<text>Наёмники живут долгами. Обобрав %s, ты только что взял один на себя.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_army_1">
+		<text>Военные не забывают обобранных. Теперь ты на заметке.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_ecolog_1">
+		<text>Учёные отмечают твоё приобретение. Холодно, в папке с твоим именем.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_monolith_1">
+		<text>Ты обираешь мёртвых Монолита. Они не торгуются, они помнят.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_renegade_1">
+		<text>Ренегаты обобрали бы тебя так же. Но злиться им это не помешает.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_greh_1">
+		<text>Ты забрал то, что занял Грех. У них свой счёт, писаный чернилами похуже.</text>
+	</string>
+	<string id="st_npc_loot_buy_stole_isg_1">
+		<text>ЮНИСГ всё каталогизирует, включая того, кто обобрал их павших. Ты в файле.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_offer_1">
+		<text>Он хочет за это %s RU. Попробуешь сбить цену?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_offer_2">
+		<text>Цена %s RU. Надавишь немного?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_offer_3">
+		<text>Он просит %s RU. Поторгуешься?</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok_1">
+		<text>Ты сбиваешь цену до %s RU.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok_2">
+		<text>Он ворчит, уступает до %s RU. 'Ладно, ладно.'</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_ok_3">
+		<text>'А ты умеешь торговаться.' %s RU, и по рукам.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no_1">
+		<text>Ему это не понравилось. Цена выросла.</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no_2">
+		<text>Он сплёвывает. 'Ещё раз оскорбишь, и станет дороже.'</text>
+	</string>
+	<string id="st_npc_loot_buy_haggle_no_3">
+		<text>'Будешь испытывать удачу, заплатишь больше, а не меньше.'</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_stalker_1">
+		<text>Вернись, когда будут %s RU, сталкер.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_bandit_1">
+		<text>%s RU или вали отсюда, нищеброд. Карманы-то пустые.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_dolg_1">
+		<text>Нет %s RU, нет сделки. Долг не богадельня.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_freedom_1">
+		<text>Нет денег, нет тела. Сначала найди %s RU, брат.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_csky_1">
+		<text>Чистое Небо берёт рублями, а не обещаниями. %s RU, или иди дальше.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_killer_1">
+		<text>%s RU вперёд или ничего. Наёмники в долг не дают.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_army_1">
+		<text>Плати пошлину %s RU или проходи.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_ecolog_1">
+		<text>Цена %s RU, и ни рублём меньше. Вернись, когда будут.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_monolith_1">
+		<text>%s RU. Монолит не торгуется с нищими.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_renegade_1">
+		<text>%s RU, падла. Нет денег, нет тела.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_greh_1">
+		<text>%s RU. Грех милостыню не подаёт.</text>
+	</string>
+	<string id="st_npc_loot_buy_poor_isg_1">
+		<text>%s RU, зафиксировано. Нет средств, нет сделки.</text>
+	</string>
+	<string id="st_npc_loot_buy_buying_label">
+		<text>Тело: %s</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_deal_sound">
+		<text>Звук сделки</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_deal_sound_desc">
+		<text>Проигрывать короткий звук купюр при закрытии сделки. Использует игровой звук денег, если его дают твои звуковые моды, иначе тихо.</text>
 	</string>
 </string_table>

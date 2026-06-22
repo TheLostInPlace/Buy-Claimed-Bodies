@@ -31,7 +31,7 @@
 		<text>Push your luck and the price climbs, not the other way round.</text>
 	</string>
 	<string id="npc_loot_buy_talk_deal">
-		<text>Deal. Here's your coin.</text>
+		<text>Deal. Here's the money.</text>
 	</string>
 	<string id="npc_loot_buy_talk_no">
 		<text>Never mind, then.</text>

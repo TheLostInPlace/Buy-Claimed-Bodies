@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.5 [BETA]
+
+## Added
+* Optional confirm popup for claimed bodies: a yes or no warning before you steal one, and a notice naming who claimed it, shown as a clear popup instead of a brief on screen line. Made for playing with PDA notifications and corpse dot marks off.
+* A sound plays when a deal closes.
+* The buy prompt now shows the body's name and rank, so you know what you are paying for.
+
+## Changed
+* More flavor: haggling has three lines each for the offer, the success and the refusal; stealing a body now draws a reaction from that faction, one for each of the twelve; the "you cannot afford it" line is per faction too; and there are more "too far to deal" lines.
+* Clearer wording: the free looting option is renamed to stealing, since it costs you goodwill with the faction, and "coin" is now roubles or money to match the Zone.
+* Cached prices expire after a while, so they track your reputation again instead of staying locked at the first value.
+* The scripts are reorganized into a core script and a separate helpers script (z_npc_loot_buy_util) for easier reading and maintenance.
+
 ## 1.0.4
 
 ## Added

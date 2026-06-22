@@ -14,126 +14,27 @@ stolen      = stolen or {}
 haggled     = haggled or {}       -- [victim_id] = true, price already negotiated, no re-haggle
 marked      = marked or {}        -- [victim_id] = true, body has a map spot to clear later
 
+local price_time = {}             -- [vid] = stamp when the price was cached, ages out non haggled prices, not persisted
 local pending_body                -- talk to killer mode, last inspected body
 local dialog_open = false
 local GUI
+local base_ui_start               -- original ui_inventory.start, used to open loot after a confirm
+local base_mutant_start           -- original ui_mutant_loot.start
 local base_handler                -- base mod use handler, kept only to unregister it
 
-local GEN_COUNT = { prompt = 6, done = 5 }
-local FAC_COUNT = { prompt = 2, done = 2 }
-local POOR_N = 4
 local GOTO_N = 5
 local MARKED_N = 3 -- location marked on map lines
 local BUSY_N = 3   -- seller too busy fighting to deal lines
+local HAGGLE_N = 3 -- at the body haggle offer, success and offended lines
+local TOOFAR_N = 3 -- claimer too far to deal lines
 local MAX_SLOTS = 6 -- most bodies shown at once in the talk to killer list
-local FACTIONS = { -- factions with their own personality lines
-	stalker = true, bandit = true, dolg = true, freedom = true, csky = true,
-	killer = true, army = true, ecolog = true, monolith = true,
-	renegade = true, greh = true, isg = true,
-}
 
 -- factions that might rough you up instead of dealing straight
 local SHADY = { bandit = true, renegade = true, killer = true, greh = true }
 
--- rank_name tier to a human price bonus, scaled by rank_weight. 8 tiers from
--- game_relations.ltx [game_relations] rating, ascending
-local RANK_BONUS = {
-	novice       = -0.35,
-	trainee      = -0.15,
-	experienced  =  0.10,
-	professional =  0.35,
-	veteran      =  0.65,
-	expert       =  1.00,
-	master       =  1.45,
-	legend       =  2.00,
-}
-
--- the actor's own rank to a price modifier, scaled by player_rank_weight. low
--- rank gets bullied and pays more, high rank is respected and pays less. same
--- tiers, opposite direction to the victim bonus above
-local PLAYER_RANK_BONUS = {
-	novice       =  0.20,
-	trainee      =  0.10,
-	experienced  =  0.00,
-	professional = -0.05,
-	veteran      = -0.15,
-	expert       = -0.25,
-	master       = -0.35,
-	legend       = -0.45,
-}
-
--- map a character_rank value to a tier, upper bounds from the same rating list,
--- used only when a body has no rank name recorded
-local RANK_THRESHOLDS = {
-	{ 1500, "novice" }, { 2500, "trainee" }, { 5500, "experienced" },
-	{ 10000, "professional" }, { 15000, "veteran" }, { 20000, "expert" },
-	{ 30000, "master" },
-}
-local function rank_from_value(rnum)
-	for i = 1, #RANK_THRESHOLDS do
-		if (rnum or 0) < RANK_THRESHOLDS[i][1] then return RANK_THRESHOLDS[i][2] end
-	end
-	return "legend"
-end
-
--- mutant section pattern in order, gives a difficulty tier 1 to 5
-local MUTANT_PATTERNS = {
-	{ "chimera",        5 },
-	{ "pseudo_?gigant", 5 },
-	{ "gigant",         5 },
-	{ "giant",          5 },
-	{ "controller",     4 },
-	{ "burer",          4 },
-	{ "bibliotekar",    4 },
-	{ "poltergeist",    3 },
-	{ "bloodsucker",    3 },
-	{ "psy_?dog",       3 },
-	{ "izlom",          3 },
-	{ "fracture",       3 },
-	{ "snork",          2 },
-	{ "bayun",          2 },
-	{ "cat",            2 },
-	{ "pseudo_?dog",    2 },
-	{ "boar",           2 },
-	{ "flesh",          1 },
-	{ "dog",            1 },
-	{ "tushkano",       1 },
-	{ "rat",            1 },
-	{ "crow",           1 },
-	{ "zombie",         1 },
-}
-local TIER_MULT = { 1.0, 1.6, 2.4, 3.5, 5.0 } -- tier multiplier, scaled by mutant_weight
-
--- per level danger multiplier, scaled by location_weight, default 1.0
-local LEVEL_DANGER = {
-	l01_escape           = 0.70, -- Cordon
-	k00_marsh            = 0.85, -- Great Swamp
-	l02_garbage          = 0.80, -- Garbage
-	l03_agroprom         = 0.90, -- Agroprom
-	l03u_agr_underground = 1.10,
-	l04_darkvalley       = 1.00, -- Dark Valley
-	l04u_labx18          = 1.30,
-	l05_bar              = 1.00, -- Rostok, Bar
-	l06_rostok           = 1.10, -- Wild Territory
-	l07_military         = 1.20, -- Army Warehouses
-	l08_yantar           = 1.20, -- Yantar
-	l08u_brainlab        = 1.50, -- Lab X16
-	labx8                = 1.60, -- Lab X8
-	l10_radar            = 1.60, -- Radar
-	l10_red_forest       = 1.70, -- Red Forest
-	l10u_bunker          = 1.60,
-	l11_pripyat          = 1.80, -- Pripyat
-	l11_hospital         = 1.80,
-	l12_stancia          = 2.00, -- CNPP
-	l12_stancia_2        = 2.00,
-	l12u_sarcofag        = 2.00,
-	l12u_control_monolith = 2.00,
-	l13u_warlab          = 1.90,
-	jupiter              = 1.10,
-	jupiter_underground  = 1.40,
-	zaton                = 1.00,
-	pripyat              = 1.60,
-}
+-- pure helpers and data live in z_npc_loot_buy_util, bound from it in on_game_start
+local rank_from_value, player_rank_bonus, mutant_tier, mutant_factor, location_factor
+local rank_factor_vals, flavour, faction_flavour, faction_nokill_line, time_stamp, time_age
 
 -- fallback if the MCM script is not loaded
 local MCM_DEFAULTS = {
@@ -176,6 +77,9 @@ local MCM_DEFAULTS = {
 	bulk_enable       = true,
 	bulk_discount     = 0.10,
 	map_mark          = true,
+	confirm_popup     = false,  -- show claimed body actions as a modal popup
+	deal_sound        = true,   -- play a rouble note sound on a closed deal
+	price_ttl_sec     = 1800,   -- in game seconds a cached price lasts before it refreshes, hidden
 	pda_notify        = true,
 	debug             = false,
 }
@@ -231,22 +135,6 @@ local function release_claim(id)
 	claims[id] = nil
 	if grok_loot_claim and grok_loot_claim.claimed then grok_loot_claim.claimed[id] = nil end
 	if grok_loot_claim and grok_loot_claim.looted  then grok_loot_claim.looted[id]  = nil end
-end
-
--- serializable in game timestamp for claim expiry, via the stock utils_data
--- CTime table converters. time_stamp records now, time_age returns how many
--- seconds have passed since a recorded stamp
-local function time_stamp()
-	if utils_data and utils_data.CTime_to_table and game and game.get_game_time then
-		return utils_data.CTime_to_table(game.get_game_time())
-	end
-	return nil
-end
-
-local function time_age(stamp)
-	if not (stamp and utils_data and utils_data.CTime_from_table and game and game.get_game_time) then return 0 end
-	local ok, age = pcall(function() return game.get_game_time():diffSec(utils_data.CTime_from_table(stamp)) end)
-	return (ok and age) or 0
 end
 
 -- true while a seller is in no state to deal: fighting or downed. blocks buys so
@@ -324,54 +212,19 @@ function on_body_used(obj)
 	if obj then map_unmark_body(obj:id()) end
 end
 
--- flavour helpers
-
-local function flavour(prefix, count, ...)
-	return strformat(game.translate_string(prefix .. math.random(count)), ...)
+-- a short rouble note sound on a closed deal. guarded, so the option being off or
+-- the sound file being absent is harmless. uses the GAMMA money sound when present
+local function play_deal_sound()
+	if get_cfg("deal_sound") == false then return end
+	if not (db.actor and sound_object) then return end
+	pcall(function()
+		local snd = sound_object([[interface\items\inv_items_money_paper]])
+		if snd then snd:play(db.actor, 0, sound_object.s2d) end
+	end)
 end
 
--- faction aware prompt or done line, falls back to the generic set
-local function faction_flavour(kind, faction, ...)
-	local id
-	if faction and FACTIONS[faction] then
-		id = strformat("st_npc_loot_buy_%s_%s_%s", kind, faction, math.random(FAC_COUNT[kind]))
-	else
-		id = strformat("st_npc_loot_buy_%s_%s", kind, math.random(GEN_COUNT[kind]))
-	end
-	return strformat(game.translate_string(id), ...)
-end
-
--- mutant difficulty and location
-
-local function mutant_tier(obj)
-	local sec = obj:section()
-	if not sec then return 2 end
-	sec = sec:lower()
-	for i = 1, #MUTANT_PATTERNS do
-		if string.find(sec, MUTANT_PATTERNS[i][1]) then
-			return MUTANT_PATTERNS[i][2]
-		end
-	end
-	return 2
-end
-
-local function mutant_factor(tier, w)
-	local m = TIER_MULT[tier] or 1.6
-	return 1 + (m - 1) * w
-end
-
-local function location_factor(lvl, w)
-	local d = (lvl and LEVEL_DANGER[lvl]) or 1.0
-	return 1 + (d - 1) * w
-end
-
--- price calculation
-
-local function rank_factor_vals(rname, rnum, w)
-	local bonus = rname and RANK_BONUS[rname]
-	if bonus == nil then bonus = RANK_BONUS[rank_from_value(rnum)] end
-	return math.max(0.25, 1 + bonus * w)
-end
+-- price calculation (flavour, faction lines, mutant tier and the rank, mutant and
+-- location factors all live in z_npc_loot_buy_util)
 
 local function faction_goodwill(faction)
 	return relation_registry.community_goodwill(faction, AC_ID) or 0
@@ -393,7 +246,7 @@ local function player_rank_factor()
 	if not actor then return 1.0 end
 	local w = tonumber(get_cfg("player_rank_weight")) or 1.0
 	local rnum = (actor.character_rank and actor:character_rank()) or 0
-	local bonus = PLAYER_RANK_BONUS[rank_from_value(rnum)] or 0
+	local bonus = player_rank_bonus(rnum) or 0
 	return math.max(0.3, 1 + bonus * w)
 end
 
@@ -510,6 +363,7 @@ local function compute_price(vid, victim_obj, seller)
 		tostring(vid), tostring(base), diff_factor, rep, pr, lootf, jitter, math.floor(raw), price, tostring(minp))
 
 	price_cache[vid] = price
+	price_time[vid] = time_stamp()
 	return price
 end
 
@@ -597,6 +451,7 @@ local function finalize_body(victim_id)
 	bought[victim_id] = true
 	stolen[victim_id] = nil
 	price_cache[victim_id] = nil
+	price_time[victim_id] = nil
 	victim_info[victim_id] = nil
 	if pending_body == victim_id then pending_body = nil end
 	nudge_body_mark(victim_id)
@@ -630,7 +485,7 @@ function do_purchase(victim_id, seller_id, seller_comm, price, silent)
 
 	if actor:money() < price then
 		dlog("do_purchase: REFUSED, cannot afford")
-		notify(flavour("st_npc_loot_buy_poor_", POOR_N, tostring(price)), seller, silent)
+		notify(faction_flavour("poor", seller_comm, tostring(price)), seller, silent)
 		return false
 	end
 
@@ -641,6 +496,7 @@ function do_purchase(victim_id, seller_id, seller_comm, price, silent)
 	end
 
 	local marked_ok = finalize_body(victim_id)
+	play_deal_sound()
 	notify(faction_flavour("done", seller_comm, sname), seller, silent)
 	-- drop an X on the map and tell the player where to find what they paid for
 	if marked_ok then
@@ -717,18 +573,27 @@ function npc_loot_buy_dialog:__init() super()
 	self:AddCallback("npc_loot_buy_hbox", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnHaggleYes, self)
 	self:AddCallback("npc_loot_buy_hbox", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnHaggleNo, self)
 	self.hbox:InitMessageBox("message_box_yes_no")
+
+	-- a yes/no used to confirm a free loot of a claimed body, runs a stored callback
+	self.cbox = CUIMessageBoxEx()
+	self:Register(self.cbox, "npc_loot_buy_cbox")
+	self:AddCallback("npc_loot_buy_cbox", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnConfirmYes, self)
+	self:AddCallback("npc_loot_buy_cbox", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnConfirmNo, self)
+	self.cbox:InitMessageBox("message_box_yes_no")
+	self.confirm_cb = nil
 end
 
-function npc_loot_buy_dialog:Prompt(victim_id, seller_id, seller_name, seller_comm, price)
+function npc_loot_buy_dialog:Prompt(victim_id, seller_id, seller_name, seller_comm, price, body_label)
 	self.victim_id = victim_id
 	self.seller_id = seller_id
 	self.seller_name = seller_name
 	self.seller_comm = seller_comm
 	self.price = price
+	self.body_label = body_label
 
 	-- offer to haggle first, once per body
 	if get_cfg("haggle_enable") == true and not haggled[victim_id] then
-		self.hbox:SetText(strformat(game.translate_string("st_npc_loot_buy_haggle_offer"), tostring(price)))
+		self.hbox:SetText(flavour("st_npc_loot_buy_haggle_offer_", HAGGLE_N, tostring(price)))
 		dialog_open = true
 		self.hbox:ShowDialog(true)
 	else
@@ -737,7 +602,11 @@ function npc_loot_buy_dialog:Prompt(victim_id, seller_id, seller_name, seller_co
 end
 
 function npc_loot_buy_dialog:ShowBuy()
-	self.box:SetText(faction_flavour("prompt", self.seller_comm, self.seller_name or "", tostring(self.price)))
+	local offer = faction_flavour("prompt", self.seller_comm, self.seller_name or "", tostring(self.price))
+	if self.body_label and self.body_label ~= "" then
+		offer = strformat(game.translate_string("st_npc_loot_buy_buying_label"), self.body_label) .. "\n \n" .. offer
+	end
+	self.box:SetText(offer)
 	dialog_open = true
 	self.box:ShowDialog(true)
 end
@@ -748,8 +617,8 @@ function npc_loot_buy_dialog:OnHaggleYes()
 	apply_haggle(self.victim_id, ok)
 	self.price = price_cache[self.victim_id] or self.price
 	local seller = level.object_by_id(self.seller_id)
-	local msg = ok and strformat(game.translate_string("st_npc_loot_buy_haggle_ok"), tostring(self.price))
-		or game.translate_string("st_npc_loot_buy_haggle_no")
+	local msg = ok and flavour("st_npc_loot_buy_haggle_ok_", HAGGLE_N, tostring(self.price))
+		or flavour("st_npc_loot_buy_haggle_no_", HAGGLE_N)
 	notify(msg, seller, false)
 	self:ShowBuy()
 end
@@ -765,7 +634,7 @@ function npc_loot_buy_dialog:OnYes()
 	if actor and actor:money() < (self.price or 0) then
 		dlog("at body OnYes: cannot afford %s with %s, showing popup", tostring(self.price), tostring(actor:money()))
 		local seller = level.object_by_id(self.seller_id)
-		local msg = flavour("st_npc_loot_buy_poor_", POOR_N, tostring(self.price))
+		local msg = faction_flavour("poor", self.seller_comm, tostring(self.price))
 		notify(msg, seller, true)   -- to the PDA only if that is on, nothing if off
 		self.okbox:SetText(msg)     -- always show the popup so it is clear
 		self.okbox:ShowDialog(true)
@@ -782,9 +651,80 @@ function npc_loot_buy_dialog:OnOk()
 	dialog_open = false
 end
 
+-- a plain ok popup naming a claimed body, so it reads clearly even with PDA tips
+-- and corpse dot marks off
+function npc_loot_buy_dialog:ShowInfo(text)
+	self.okbox:SetText(text)
+	dialog_open = true
+	self.okbox:ShowDialog(true)
+end
+
+-- a yes/no popup whose Yes runs the stored callback, used to confirm a free loot
+function npc_loot_buy_dialog:ShowConfirm(text, on_yes)
+	self.confirm_cb = on_yes
+	self.cbox:SetText(text)
+	dialog_open = true
+	self.cbox:ShowDialog(true)
+end
+
+function npc_loot_buy_dialog:OnConfirmYes()
+	dialog_open = false
+	local cb = self.confirm_cb
+	self.confirm_cb = nil
+	if cb then cb() end
+end
+
+function npc_loot_buy_dialog:OnConfirmNo()
+	dialog_open = false
+	self.confirm_cb = nil
+end
+
+-- "Name, Rank" for a human body, just the name for a mutant, shown in the buy
+-- prompt so you know what you are paying for
+local function body_label_for(vid)
+	local info = victim_info[vid]
+	local obj = vid and level.object_by_id(vid)
+	local mut = info and info.mutant
+	if mut == nil and obj then mut = IsMonster(obj) end
+	local nm = (info and info.name and info.name ~= "" and info.name) or (obj and obj:character_name())
+	if not nm or nm == "" then
+		nm = game.translate_string(mut and "st_npc_loot_buy_mutant" or "st_npc_loot_buy_someone")
+	end
+	if mut then return nm end
+	local rname = (info and info.rname) or (obj and obj.rank_name and obj:rank_name())
+	if rname and rname ~= "" then
+		return strformat("%s, %s", nm, rname:sub(1, 1):upper() .. rname:sub(2))
+	end
+	return nm
+end
+
 local function open_buy_dialog(victim_id, seller, price)
 	if not GUI then GUI = npc_loot_buy_dialog() end
-	GUI:Prompt(victim_id, seller:id(), seller:character_name(), character_community(seller), price)
+	GUI:Prompt(victim_id, seller:id(), seller:character_name(), character_community(seller), price, body_label_for(victim_id))
+end
+
+local function open_info(text)
+	if dialog_open then return end
+	if not GUI then GUI = npc_loot_buy_dialog() end
+	GUI:ShowInfo(text)
+end
+
+local function open_confirm(text, on_yes)
+	if dialog_open then return end
+	if not GUI then GUI = npc_loot_buy_dialog() end
+	GUI:ShowConfirm(text, on_yes)
+end
+
+-- open the loot window next tick, after the confirm popup has closed, so we are
+-- not opening one UI from inside another's callback
+local function open_loot_deferred(obj)
+	if not (obj and base_ui_start) then return end
+	local oid = obj:id()
+	CreateTimeEvent("npc_loot_buy_steal", "open_" .. tostring(oid), 0, function()
+		local o = level.object_by_id(oid)
+		if o and base_ui_start then base_ui_start("loot", o) end
+		return true
+	end)
 end
 
 -- interaction handlers, self contained, work with or without a base claim mod
@@ -808,6 +748,25 @@ local function alert_faction(faction)
 		return false
 	end)
 	dlog("alert_faction %s: turned %s nearby members hostile within %sm", tostring(faction), tostring(hit), tostring(radius))
+end
+
+-- carry out a free loot: alert nearby faction, take the goodwill penalty, mark
+-- the body stolen and drop the claim. the loot window opens separately after this
+local function do_steal(seller, id)
+	local comm = character_community(seller)
+	if get_cfg("alert_on_far_loot") then alert_faction(comm) end
+	-- stealing the kill sours the faction toward you, drop them low enough and
+	-- faction_refuses kicks in and they stop dealing with you
+	if get_cfg("steal_consequences") and relation_registry and relation_registry.change_community_goodwill then
+		local pen = tonumber(get_cfg("steal_goodwill_penalty")) or 300
+		relation_registry.change_community_goodwill(comm, AC_ID, -pen)
+		dlog("steal: %s goodwill -%s, now %s", comm, tostring(pen), tostring(faction_goodwill(comm)))
+	end
+	stolen[id] = true
+	release_claim(id)
+	nudge_body_mark(id)
+	notify(faction_flavour("stole", comm, seller:character_name()), seller, false)
+	dlog("steal: body %s free looted", tostring(id))
 end
 
 -- ret_value does not reliably block the loot window, so we hook
@@ -836,19 +795,12 @@ local function decide_loot(obj)
 
 	if too_far then
 		if get_cfg("loot_when_far") then
-			if get_cfg("alert_on_far_loot") then alert_faction(comm) end
-			-- stealing the kill sours the faction toward you, drop them low enough
-			-- and faction_refuses kicks in and they stop dealing with you
-			if get_cfg("steal_consequences") and relation_registry and relation_registry.change_community_goodwill then
-				local pen = tonumber(get_cfg("steal_goodwill_penalty")) or 300
-				relation_registry.change_community_goodwill(comm, AC_ID, -pen)
-				dlog("steal: %s goodwill -%s, now %s", comm, tostring(pen), tostring(faction_goodwill(comm)))
+			-- with the popup option on, ask first instead of stealing on the spot
+			if get_cfg("confirm_popup") == true then
+				dlog("loot %s: too far, confirm before stealing", tostring(id))
+				return "steal", seller, id
 			end
-			stolen[id] = true
-			release_claim(id)
-			nudge_body_mark(id)
-			dlog("loot %s: too far, free looting and marking stolen", tostring(id))
-			notify(strformat(game.translate_string("st_npc_loot_buy_stole"), seller:character_name()), seller, false)
+			do_steal(seller, id)
 			return nil
 		end
 		dlog("loot %s: blocked, claimer too far to deal", tostring(id))
@@ -872,20 +824,36 @@ local function action_throttled(id)
 end
 
 local function do_loot_action(action, seller, obj, id)
+	-- when the popup option is on, a claimed body interaction shows a modal popup
+	-- and the PDA tip goes quiet (silent), so it reads clearly with PDA and dot
+	-- marks off. otherwise it falls back to the brief on screen line as before
+	local popup = get_cfg("confirm_popup") == true
 	if action == "buy" then
 		open_buy_dialog(id, seller, compute_price(id, obj, seller))
 	elseif action == "goto" then
 		pending_body = id
 		compute_price(id, obj, seller)
-		notify(flavour("st_npc_loot_buy_goto_", GOTO_N, seller:character_name()), seller, false)
+		local msg = flavour("st_npc_loot_buy_goto_", GOTO_N, seller:character_name())
+		notify(msg, seller, popup)
+		if popup then open_info(msg) end
 	elseif action == "block" then
-		notify(strformat(game.translate_string("st_npc_loot_buy_toofar"), seller:character_name()), seller, false)
+		local msg = flavour("st_npc_loot_buy_toofar_", TOOFAR_N, seller:character_name())
+		notify(msg, seller, popup)
+		if popup then open_info(msg) end
 	elseif action == "busy" then
-		notify(flavour("st_npc_loot_buy_busy_", BUSY_N, seller:character_name()), seller, false)
+		local msg = flavour("st_npc_loot_buy_busy_", BUSY_N, seller:character_name())
+		notify(msg, seller, popup)
+		if popup then open_info(msg) end
+	elseif action == "steal" then
+		-- only reached with the popup option on, ask before free looting
+		local msg = strformat(game.translate_string("st_npc_loot_buy_steal_confirm"), seller:character_name())
+		open_confirm(msg, function()
+			do_steal(seller, id)
+			open_loot_deferred(obj)
+		end)
 	end
 end
 
-local base_ui_start
 local function ui_loot_hook(mode, obj)
 	if mode == "loot" and obj then
 		local action, seller, id = decide_loot(obj)
@@ -901,7 +869,6 @@ local function ui_loot_hook(mode, obj)
 	if base_ui_start then base_ui_start(mode, obj) end
 end
 
-local base_mutant_start
 local function ui_mutant_loot_hook(obj, ...)
 	if obj then
 		local action, seller, id = decide_loot(obj)
@@ -928,12 +895,6 @@ local dlg_last_ok     -- true bought, false too poor, nil nothing bought yet
 local dlg_last_price
 local dlg_haggle_id   -- npc whose last haggle result the hub line should report
 local dlg_haggle_ok   -- true talked it down, false took offense, nil not tried
-
-local function faction_nokill_line(comm)
-	local id = (comm and FACTIONS[comm]) and ("npc_loot_buy_nokill_" .. comm)
-		or "npc_loot_buy_nokill_generic"
-	return game.translate_string(id)
-end
 
 local function rank_word(rname)
 	if not rname or rname == "" then return nil end
@@ -1095,6 +1056,7 @@ function dlg_bulk_buy(a, b)
 	for i = 1, #list do
 		if finalize_body(list[i].vid) then any_mark = true end
 	end
+	play_deal_sound()
 	notify(faction_flavour("done", comm, npc:character_name()), npc, true)
 	if any_mark then notify(flavour("st_npc_loot_buy_marked_", MARKED_N), npc, true) end
 	dlg_last_id, dlg_last_ok, dlg_last_price = id, true, total
@@ -1148,7 +1110,7 @@ function dlg_list_header(a, b)
 	end
 	if dlg_last_id == id and dlg_last_ok ~= nil then
 		if dlg_last_ok then return game.translate_string("npc_loot_buy_talk_list_more") end
-		return flavour("st_npc_loot_buy_poor_", POOR_N, tostring(dlg_last_price or 0))
+		return faction_flavour("poor", character_community(npc), tostring(dlg_last_price or 0))
 	end
 	return game.translate_string("npc_loot_buy_talk_list")
 end
@@ -1249,6 +1211,7 @@ local function maintenance_tick()
 			release_claim(id)
 			victim_info[id] = nil
 			price_cache[id] = nil
+			price_time[id]  = nil
 			haggled[id]     = nil
 			bought[id]      = nil
 			stolen[id]      = nil
@@ -1261,9 +1224,37 @@ local function maintenance_tick()
 			end
 		end
 	end
+
+	-- age out stale, un haggled cached prices so they track your standing again
+	local ttl = tonumber(get_cfg("price_ttl_sec")) or 1800
+	for vid in pairs(price_cache) do
+		if not haggled[vid] then
+			if not price_time[vid] then
+				price_time[vid] = time_stamp()
+			elseif time_age(price_time[vid]) > ttl then
+				price_cache[vid] = nil
+				price_time[vid] = nil
+				dlog("maint: price for %s aged out", tostring(vid))
+			end
+		end
+	end
 end
 
 function on_game_start()
+	-- bind the pure helpers from z_npc_loot_buy_util, now that it is loaded
+	local u = z_npc_loot_buy_util
+	rank_from_value     = u.rank_from_value
+	player_rank_bonus   = u.player_rank_bonus
+	mutant_tier         = u.mutant_tier
+	mutant_factor       = u.mutant_factor
+	location_factor     = u.location_factor
+	rank_factor_vals    = u.rank_factor_vals
+	flavour             = u.flavour
+	faction_flavour     = u.faction_flavour
+	faction_nokill_line = u.faction_nokill_line
+	time_stamp          = u.time_stamp
+	time_age            = u.time_age
+
 	-- expose one set of dialogue functors per body slot, each guarded so a Lua
 	-- error in the list logic lands in the debug log instead of breaking dialogue
 	if dialogs then

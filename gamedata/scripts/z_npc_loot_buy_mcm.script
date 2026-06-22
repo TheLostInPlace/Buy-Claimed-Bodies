@@ -42,6 +42,9 @@ local defaults = {
 	npc_respect_claims = false, -- NPCs will not loot a body claimed by a different NPC
 	npc_owner_loots    = true,  -- the claiming NPC may still loot its own kill
 	map_mark          = true,  -- mark a bought body with an X on the pda map and minimap
+	confirm_popup     = false, -- show claimed body actions as a modal popup, warn before a free loot
+	deal_sound        = true,  -- play a rouble note sound on a closed deal
+	price_ttl_sec     = 1800,  -- in game seconds a cached price lasts before it refreshes, hidden tunable
 	pda_notify        = true,  -- show buy, steal and interact messages as PDA notifications
 	debug             = false, -- write diagnostics to appdata\logs\npc_loot_buy_dbg.log
 }
@@ -115,6 +118,8 @@ function on_mcm_load()
 			{ id = "ln_interface", type = "line" },
 			{ id = "hdr_interface", type = "title", text = "ui_mcm_npc_loot_buy_hdr_interface", align = "c", clr = hdr },
 			{ id = "map_mark",          type = "check", val = 1, def = true },
+			{ id = "confirm_popup",     type = "check", val = 1, def = false },
+			{ id = "deal_sound",        type = "check", val = 1, def = true },
 			{ id = "pda_notify",        type = "check", val = 1, def = true },
 			{ id = "debug",             type = "check", val = 1, def = false },
 		}
