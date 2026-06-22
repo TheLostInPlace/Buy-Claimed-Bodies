@@ -12,6 +12,7 @@ claims      = claims or {}        -- [victim_id] = killer_id, our own claim reco
 bought      = bought or {}
 stolen      = stolen or {}
 haggled     = haggled or {}       -- [victim_id] = true, price already negotiated, no re-haggle
+marked      = marked or {}        -- [victim_id] = true, body has a map spot to clear later
 
 local pending_body                -- talk to killer mode, last inspected body
 local dialog_open = false
@@ -22,6 +23,8 @@ local GEN_COUNT = { prompt = 6, done = 5 }
 local FAC_COUNT = { prompt = 2, done = 2 }
 local POOR_N = 4
 local GOTO_N = 5
+local MARKED_N = 3 -- location marked on map lines
+local BUSY_N = 3   -- seller too busy fighting to deal lines
 local MAX_SLOTS = 6 -- most bodies shown at once in the talk to killer list
 local FACTIONS = { -- factions with their own personality lines
 	stalker = true, bandit = true, dolg = true, freedom = true, csky = true,
@@ -162,6 +165,12 @@ local MCM_DEFAULTS = {
 	shady_betray      = true,
 	shady_betray_chance = 0.12,
 	shady_melee_power = 0.01,
+	no_combat_deals   = true,
+	claim_expiry      = true,
+	claim_expiry_hours = 6,
+	bulk_enable       = true,
+	bulk_discount     = 0.10,
+	map_mark          = true,
 	pda_notify        = true,
 	debug             = false,
 }
@@ -219,6 +228,32 @@ local function release_claim(id)
 	if grok_loot_claim and grok_loot_claim.looted  then grok_loot_claim.looted[id]  = nil end
 end
 
+-- serializable in game timestamp for claim expiry, via the stock utils_data
+-- CTime table converters. time_stamp records now, time_age returns how many
+-- seconds have passed since a recorded stamp
+local function time_stamp()
+	if utils_data and utils_data.CTime_to_table and game and game.get_game_time then
+		return utils_data.CTime_to_table(game.get_game_time())
+	end
+	return nil
+end
+
+local function time_age(stamp)
+	if not (stamp and utils_data and utils_data.CTime_from_table and game and game.get_game_time) then return 0 end
+	local ok, age = pcall(function() return game.get_game_time():diffSec(utils_data.CTime_from_table(stamp)) end)
+	return (ok and age) or 0
+end
+
+-- true while a seller is in no state to deal: fighting or downed. blocks buys so
+-- you cannot trade in the middle of a firefight
+local function seller_busy(npc)
+	if get_cfg("no_combat_deals") == false then return false end
+	if not (npc and npc:alive()) then return false end
+	if npc.best_enemy and npc:best_enemy() then return true end
+	if IsWounded and IsWounded(npc) then return true end
+	return false
+end
+
 -- event message. when pda_notify is on it sends a PDA tip with the NPC name and
 -- face, else a brief on screen line. silent skips the on screen fallback
 local function notify(text, npc, silent)
@@ -245,6 +280,43 @@ local function nudge_body_mark(id)
 	if ui_hud_dotmarks.unregister_scanned_entity then
 		ui_hud_dotmarks.unregister_scanned_entity(id)
 	end
+end
+
+-- put an X on the pda map and minimap at a bought body so you can find it again.
+-- we reuse the engine treasure spot, the only stock spot that draws an X, with a
+-- per body hint. the _ser spot is saved by the engine, so we only add it once at
+-- purchase and never re-add on load
+local MAP_SPOT = "treasure"
+local function map_mark_body(id, name)
+	if get_cfg("map_mark") == false then return end
+	if not (id and level.map_add_object_spot_ser) then return end
+	if marked[id] then return true end
+	if level.map_has_object_spot and level.map_has_object_spot(id, MAP_SPOT) ~= 0 then
+		marked[id] = true; return true
+	end
+	local hint = game.translate_string("st_npc_loot_buy_map_hint")
+	if name and name ~= "" then hint = hint .. ": " .. name end
+	level.map_add_object_spot_ser(id, MAP_SPOT, hint)
+	marked[id] = true
+	dlog("map: marked body %s (%s)", tostring(id), tostring(name))
+	return true
+end
+
+-- clear the X, two removes because the engine drops only one spot per call
+local function map_unmark_body(id)
+	if not id then return end
+	if not (marked[id] or (level.map_has_object_spot and level.map_has_object_spot(id, MAP_SPOT) ~= 0)) then return end
+	if level.map_remove_object_spot then
+		level.map_remove_object_spot(id, MAP_SPOT)
+		level.map_remove_object_spot(id, MAP_SPOT)
+	end
+	marked[id] = nil
+	dlog("map: unmarked body %s", tostring(id))
+end
+
+-- fired when the actor uses a corpse, clears its mark once it is found and looted
+function on_body_used(obj)
+	if obj then map_unmark_body(obj:id()) end
 end
 
 -- flavour helpers
@@ -450,6 +522,21 @@ end
 
 -- purchase
 
+-- shared bookkeeping once a body is paid for: drop the claim, flag it bought,
+-- clear caches, refresh its corpse label and drop the map X. returns whether a
+-- map mark was placed. money and seller checks happen in the callers
+local function finalize_body(victim_id)
+	local vname = victim_info[victim_id] and victim_info[victim_id].name
+	release_claim(victim_id)
+	bought[victim_id] = true
+	stolen[victim_id] = nil
+	price_cache[victim_id] = nil
+	victim_info[victim_id] = nil
+	if pending_body == victim_id then pending_body = nil end
+	nudge_body_mark(victim_id)
+	return map_mark_body(victim_id, vname)
+end
+
 -- silent = true skips on screen messages, the dialogue shows the result instead
 function do_purchase(victim_id, seller_id, seller_comm, price, silent)
 	local actor = db.actor
@@ -459,6 +546,13 @@ function do_purchase(victim_id, seller_id, seller_comm, price, silent)
 	local sname = (seller and seller:character_name()) or game.translate_string("st_npc_loot_buy_someone")
 	dlog("do_purchase: body %s from %s (%s) price %s money %s silent %s",
 		tostring(victim_id), sname, tostring(seller_comm), tostring(price), tostring(actor:money()), tostring(silent))
+
+	-- a seller in a firefight will not stop to deal
+	if seller_busy(seller) then
+		dlog("do_purchase: REFUSED, seller busy in combat")
+		notify(flavour("st_npc_loot_buy_busy_", BUSY_N, sname), seller, silent)
+		return false
+	end
 
 	-- shady seller may rough you up and tell you to get lost instead of dealing
 	if seller and seller:alive() and shady_betray_roll(seller_comm) then
@@ -480,15 +574,12 @@ function do_purchase(victim_id, seller_id, seller_comm, price, silent)
 		actor:give_money(-price)
 	end
 
-	release_claim(victim_id)
-	bought[victim_id] = true
-	stolen[victim_id] = nil
-	price_cache[victim_id] = nil
-	victim_info[victim_id] = nil
-	if pending_body == victim_id then pending_body = nil end
-	nudge_body_mark(victim_id)
-
+	local marked_ok = finalize_body(victim_id)
 	notify(faction_flavour("done", seller_comm, sname), seller, silent)
+	-- drop an X on the map and tell the player where to find what they paid for
+	if marked_ok then
+		notify(flavour("st_npc_loot_buy_marked_", MARKED_N), seller, silent)
+	end
 	dlog("do_purchase: OK, body %s now bought", tostring(victim_id))
 	return true
 end
@@ -698,6 +789,7 @@ local function decide_loot(obj)
 		return "block", seller, id
 	end
 
+	if seller_busy(seller) then dlog("loot %s: seller busy fighting, no deal", tostring(id)); return "busy", seller, id end
 	if (tonumber(get_cfg("interact_mode")) or 0) == 1 then dlog("loot %s: goto mode", tostring(id)); return "goto", seller, id end
 	dlog("loot %s: buy prompt", tostring(id))
 	return "buy", seller, id
@@ -722,6 +814,8 @@ local function do_loot_action(action, seller, obj, id)
 		notify(flavour("st_npc_loot_buy_goto_", GOTO_N, seller:character_name()), seller, false)
 	elseif action == "block" then
 		notify(strformat(game.translate_string("st_npc_loot_buy_toofar"), seller:character_name()), seller, false)
+	elseif action == "busy" then
+		notify(flavour("st_npc_loot_buy_busy_", BUSY_N, seller:character_name()), seller, false)
 	end
 end
 
@@ -859,11 +953,87 @@ local function slot_buy(a, b, n)
 	local e = list and list[n]
 	if not e then dlog("slot_buy: slot %s empty for npc %s", tostring(n), tostring(npc:id())); return end
 	local id = npc:id()
+	if seller_busy(npc) then
+		dlog("slot_buy: npc %s busy fighting, no deal", tostring(id))
+		notify(flavour("st_npc_loot_buy_busy_", BUSY_N, npc:character_name()), npc, true)
+		return
+	end
 	dlog("slot_buy: npc %s slot %s body %s price %s", tostring(id), tostring(n), tostring(e.vid), tostring(e.price))
 	dlg_last_ok = do_purchase(e.vid, id, character_community(npc), e.price, true)
 	dlg_last_id, dlg_last_price = id, e.price
 	dlg_haggle_id = nil  -- a purchase result supersedes any haggle line
 	dlg_lists[id] = nil  -- rebuild on the way back to the hub so the bought body drops off
+end
+
+-- bulk buyout: one option that buys every body this seller has on offer, at a
+-- small bundle discount, in a single transaction
+
+local function bulk_total(list)
+	local sum = 0
+	for i = 1, #list do sum = sum + (list[i].price or 0) end
+	local disc = clamp(tonumber(get_cfg("bulk_discount")) or 0.10, 0, 0.9)
+	return math.floor(sum * (1 - disc) + 0.5)
+end
+
+-- shown only when there are at least two bodies, so it never duplicates a single
+-- slot buy
+function dlg_can_bulk(a, b)
+	if get_cfg("bulk_enable") == false then return false end
+	local npc = dialogs.who_is_npc(a, b)
+	local list = npc and ensure_list(npc)
+	return list ~= nil and #list >= 2
+end
+
+function dlg_bulk_label(a, b)
+	local npc = dialogs.who_is_npc(a, b)
+	local list = npc and ensure_list(npc)
+	if not list or #list == 0 then return "" end
+	return strformat(game.translate_string("npc_loot_buy_talk_buyall_fmt"), tostring(#list), tostring(bulk_total(list)))
+end
+
+function dlg_bulk_buy(a, b)
+	local npc = dialogs.who_is_npc(a, b)
+	if not npc then return end
+	local id = npc:id()
+	local list = ensure_list(npc)
+	if not list or #list == 0 then return end
+	local comm = character_community(npc)
+
+	if seller_busy(npc) then
+		dlog("bulk: npc %s busy fighting, no deal", tostring(id))
+		notify(flavour("st_npc_loot_buy_busy_", BUSY_N, npc:character_name()), npc, true)
+		return
+	end
+	-- one betrayal roll covers the whole bundle
+	if npc:alive() and shady_betray_roll(comm) then
+		dlog("bulk: shady betrayal by npc %s (%s)", tostring(id), tostring(comm))
+		melee_warn(npc)
+		notify(betray_line(comm), npc, false)
+		dlg_lists[id] = nil
+		return
+	end
+
+	local actor = db.actor
+	if not actor then return end
+	local total = bulk_total(list)
+	dlog("bulk: npc %s, %s bodies, total %s, money %s", tostring(id), tostring(#list), tostring(total), tostring(actor:money()))
+	if actor:money() < total then
+		dlg_last_id, dlg_last_ok, dlg_last_price = id, false, total
+		dlg_haggle_id = nil
+		dlg_lists[id] = nil
+		return
+	end
+
+	if npc:alive() then actor:transfer_money(total, npc) else actor:give_money(-total) end
+	local any_mark = false
+	for i = 1, #list do
+		if finalize_body(list[i].vid) then any_mark = true end
+	end
+	notify(faction_flavour("done", comm, npc:character_name()), npc, true)
+	if any_mark then notify(flavour("st_npc_loot_buy_marked_", MARKED_N), npc, true) end
+	dlg_last_id, dlg_last_ok, dlg_last_price = id, true, total
+	dlg_haggle_id = nil
+	dlg_lists[id] = nil  -- rebuild, now empty
 end
 
 -- the "talk them down" option, shown only while there is an un-haggled body
@@ -941,7 +1111,7 @@ function on_npc_death(victim, killer)
 
 	claims[vid] = kid
 	local is_mut = IsMonster(victim)
-	local rec = { mutant = is_mut, lvl = level.name(), name = (victim.character_name and victim:character_name()) or "" }
+	local rec = { mutant = is_mut, lvl = level.name(), name = (victim.character_name and victim:character_name()) or "", t = time_stamp() }
 	if is_mut then
 		rec.tier = mutant_tier(victim)
 	else
@@ -965,6 +1135,7 @@ function save_state(m_data)
 	m_data.npc_loot_buy_bought = bought
 	m_data.npc_loot_buy_stolen = stolen
 	m_data.npc_loot_buy_haggled = haggled
+	m_data.npc_loot_buy_marked = marked
 end
 
 function load_state(m_data)
@@ -974,10 +1145,51 @@ function load_state(m_data)
 	bought = m_data.npc_loot_buy_bought or {}
 	stolen = m_data.npc_loot_buy_stolen or {}
 	haggled = m_data.npc_loot_buy_haggled or {}
+	marked = m_data.npc_loot_buy_marked or {}
 	pending_body = nil
 	local function count(t) local n = 0; for _ in pairs(t) do n = n + 1 end; return n end
 	dlog("load_state: claims=%s victims=%s bought=%s stolen=%s prices=%s",
 		count(claims), count(victim_info), count(bought), count(stolen), count(price_cache))
+end
+
+-- periodic upkeep, about every 10s: age out stale claims and purge bodies that
+-- have despawned so their claim, price and map X do not linger
+local last_maint = 0
+local function maintenance_tick()
+	local now = time_global()
+	if (now - last_maint) < 10000 then return end
+	last_maint = now
+	if not alife() then return end
+
+	local expiry = get_cfg("claim_expiry") ~= false
+	local maxsec = (tonumber(get_cfg("claim_expiry_hours")) or 6) * 3600
+
+	-- snapshot the ids we track, so editing the tables mid loop is safe
+	local ids = {}
+	for id in pairs(claims)      do ids[id] = true end
+	for id in pairs(marked)      do ids[id] = true end
+	for id in pairs(bought)      do ids[id] = true end
+	for id in pairs(victim_info) do ids[id] = true end
+
+	for id in pairs(ids) do
+		if alife():object(id) == nil then
+			-- gone from the world, drop everything we held on it
+			if marked[id] then map_unmark_body(id) end
+			release_claim(id)
+			victim_info[id] = nil
+			price_cache[id] = nil
+			haggled[id]     = nil
+			bought[id]      = nil
+			stolen[id]      = nil
+			dlog("maint: body %s despawned, purged", tostring(id))
+		elseif expiry and claims[id] and victim_info[id] and victim_info[id].t then
+			if time_age(victim_info[id].t) > maxsec then
+				release_claim(id)
+				nudge_body_mark(id)
+				dlog("maint: claim on %s expired after %s h", tostring(id), tostring(get_cfg("claim_expiry_hours")))
+			end
+		end
+	end
 end
 
 function on_game_start()
@@ -1027,6 +1239,9 @@ function on_game_start()
 	RegisterScriptCallback("actor_on_leave_dialog", on_actor_leave_dialog)
 	RegisterScriptCallback("npc_on_death_callback", on_npc_death)
 	RegisterScriptCallback("monster_on_death_callback", on_npc_death)
+	RegisterScriptCallback("npc_on_use", on_body_used)
+	RegisterScriptCallback("monster_on_actor_use_callback", on_body_used)
+	RegisterScriptCallback("actor_on_update", maintenance_tick)
 	RegisterScriptCallback("save_state", save_state)
 	RegisterScriptCallback("load_state", load_state)
 	dlog("on_game_start complete, dot marks present: %s", tostring(ui_hud_dotmarks ~= nil))

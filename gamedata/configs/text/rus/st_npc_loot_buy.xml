@@ -492,4 +492,85 @@
 	<string id="ui_mcm_npc_loot_buy_shady_betray_chance_desc">
 		<text>Базовый шанс, что тёмный торговец кинет вас на сделке. Меньше, если вы им нравитесь, больше, если нет.</text>
 	</string>
+	<string id="ui_mcm_npc_loot_buy_map_mark">
+		<text>Отмечать купленные тела на карте</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_map_mark_desc">
+		<text>После покупки тела на карте КПК и на миникарте ставится крестик, чтобы ты мог снова его найти. Метка исчезает, как только обыщешь тело.</text>
+	</string>
+
+	<string id="st_npc_loot_buy_map_hint">
+		<text>Купленное тело</text>
+	</string>
+	<string id="st_npc_loot_buy_marked_1">
+		<text>Я отметил место на твоей карте. Тело никуда не денется.</text>
+	</string>
+	<string id="st_npc_loot_buy_marked_2">
+		<text>Глянь на карту. Я поставил метку, где оно лежит.</text>
+	</string>
+	<string id="st_npc_loot_buy_marked_3">
+		<text>Теперь место есть в твоём КПК. Не заблудись.</text>
+	</string>
+	<string id="st_npc_loot_buy_busy_1">
+		<text>%s сейчас в бою. Не до сделок.</text>
+	</string>
+	<string id="st_npc_loot_buy_busy_2">
+		<text>'Не сейчас!' %s кричит сквозь стрельбу. Вернись, когда стихнет.</text>
+	</string>
+	<string id="st_npc_loot_buy_busy_3">
+		<text>%s держит ствол наготове, есть с кем разобраться. Позже.</text>
+	</string>
+
+	<string id="npc_loot_buy_talk_buyall">
+		<text>Купить всех разом.</text>
+	</string>
+	<string id="npc_loot_buy_talk_buyall_fmt">
+		<text>Купить все тела разом: %s шт. (%s RU)</text>
+	</string>
+
+	<string id="ui_mcm_npc_loot_buy_no_combat_deals">
+		<text>Не торговать в бою</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_no_combat_deals_desc">
+		<text>Когда включено, продавец в перестрелке или раненый не станет торговать. Дождись конца боя.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_bulk_enable">
+		<text>Разрешить покупку всех</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_bulk_enable_desc">
+		<text>Если у продавца несколько тел, в диалоге появляется опция купить все разом с небольшой скидкой за опт.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry">
+		<text>Истечение прав на тело</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry_desc">
+		<text>Когда включено, тело, которого долго не трогали, снова можно обобрать бесплатно, NPC теряет к нему интерес.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry_hours">
+		<text>Срок прав (часы)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry_hours_desc">
+		<text>Сколько игровых часов держится право на тело, прежде чем оно истечёт и тело можно обобрать.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_general">
+		<text>- Общее -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_pricing">
+		<text>- Цены -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_buying">
+		<text>- Покупка и права -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_shady">
+		<text>- Тёмные продавцы -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_stealing">
+		<text>- Воровство (даром) -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_npc">
+		<text>- NPC уважают права -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_interface">
+		<text>- Интерфейс и уведомления -</text>
+	</string>
 </string_table>

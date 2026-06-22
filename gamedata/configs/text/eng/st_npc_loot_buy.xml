@@ -106,6 +106,25 @@
 		<text>You strip a body that %s had claimed. No coin changed hands.</text>
 	</string>
 
+	<!-- Seller is in a firefight and will not deal.  %s = seller name -->
+	<string id="st_npc_loot_buy_busy_1">
+		<text>%s is in a fight. No time to deal right now.</text>
+	</string>
+	<string id="st_npc_loot_buy_busy_2">
+		<text>'Not now!' %s shouts over the gunfire. Come back when it is quiet.</text>
+	</string>
+	<string id="st_npc_loot_buy_busy_3">
+		<text>%s has a rifle up and an enemy to deal with. Later.</text>
+	</string>
+
+	<!-- Bulk buyout option.  fmt takes %s = body count, %s = total price -->
+	<string id="npc_loot_buy_talk_buyall">
+		<text>Buy all of them at once.</text>
+	</string>
+	<string id="npc_loot_buy_talk_buyall_fmt">
+		<text>Buy all %s bodies (%s RU)</text>
+	</string>
+
 	<!-- At-the-body haggle.  offer/ok take %s = price -->
 	<string id="st_npc_loot_buy_haggle_offer">
 		<text>He wants %s RU for it. Try to talk him down?</text>
@@ -316,6 +335,29 @@
 		<text>Buy claimed bodies from the NPCs guarding them. Human bodies are priced by rank, mutants by difficulty and where they died; both are adjusted by your reputation with the claiming faction plus a small random factor.</text>
 	</string>
 
+	<!-- ==== MCM section headers ==== -->
+	<string id="ui_mcm_npc_loot_buy_hdr_general">
+		<text>- General -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_pricing">
+		<text>- Pricing -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_buying">
+		<text>- Buying and claims -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_shady">
+		<text>- Shady sellers -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_stealing">
+		<text>- Stealing (free loot) -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_npc">
+		<text>- NPCs respecting claims -</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_hdr_interface">
+		<text>- Interface and feedback -</text>
+	</string>
+
 	<string id="ui_mcm_npc_loot_buy_enable">
 		<text>Enable buying claimed bodies</text>
 	</string>
@@ -498,6 +540,31 @@
 		<text>Base chance a shady seller betrays the deal. Lower if they like you, higher if they do not.</text>
 	</string>
 
+	<string id="ui_mcm_npc_loot_buy_no_combat_deals">
+		<text>No deals mid-combat</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_no_combat_deals_desc">
+		<text>When on, a seller who is in a firefight or downed will not stop to deal. Wait until the fighting is over.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_bulk_enable">
+		<text>Allow buy all</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_bulk_enable_desc">
+		<text>When a seller has claimed several bodies, the talk menu offers a single option to buy all of them at once, at a small bundle discount.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry">
+		<text>Claims expire</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry_desc">
+		<text>When on, a claimed body left untouched for long enough becomes free to loot again, as the NPC loses interest.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry_hours">
+		<text>Claim lifetime (hours)</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_claim_expiry_hours_desc">
+		<text>In game hours a claim lasts before it expires and the body is free to loot.</text>
+	</string>
+
 	<string id="ui_mcm_npc_loot_buy_pda_notify">
 		<text>Use PDA notifications</text>
 	</string>
@@ -505,11 +572,32 @@
 		<text>When on, buy/steal/find-the-killer messages are shown as persistent PDA notifications carrying the NPC's name and face, so you know who to go to, instead of brief on-screen text.</text>
 	</string>
 
+	<string id="ui_mcm_npc_loot_buy_map_mark">
+		<text>Mark bought bodies on map</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_map_mark_desc">
+		<text>After you buy a body, an X is placed at it on the PDA map and the minimap so you can find it again. The mark clears once you loot the body.</text>
+	</string>
+
 	<string id="ui_mcm_npc_loot_buy_debug">
 		<text>Debug logging</text>
 	</string>
 	<string id="ui_mcm_npc_loot_buy_debug_desc">
 		<text>Writes diagnostics to appdata\logs\npc_loot_buy_dbg.log and shows them on screen, to troubleshoot why a buy prompt does or does not appear. Leave off during normal play.</text>
+	</string>
+
+	<!-- ==== Map mark tooltip and the seller telling you it is marked ==== -->
+	<string id="st_npc_loot_buy_map_hint">
+		<text>Bought body</text>
+	</string>
+	<string id="st_npc_loot_buy_marked_1">
+		<text>I marked the spot on your map. The body will not walk away.</text>
+	</string>
+	<string id="st_npc_loot_buy_marked_2">
+		<text>Check your map. I put a mark where it lies.</text>
+	</string>
+	<string id="st_npc_loot_buy_marked_3">
+		<text>Your PDA has the location now. Do not lose your way.</text>
 	</string>
 
 </string_table>

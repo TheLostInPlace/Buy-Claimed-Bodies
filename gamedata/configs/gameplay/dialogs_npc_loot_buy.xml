@@ -16,6 +16,7 @@
 				<next>104</next>
 				<next>105</next>
 				<next>106</next>
+				<next>198</next>
 				<next>199</next>
 				<next>200</next>
 			</phrase>
@@ -59,6 +60,13 @@
 				<precondition>dialogs.npc_loot_buy_avail_6</precondition>
 				<script_text>dialogs.npc_loot_buy_label_6</script_text>
 				<action>dialogs.npc_loot_buy_buy_6</action>
+				<next>1</next>
+			</phrase>
+			<phrase id="198">
+				<text>npc_loot_buy_talk_buyall</text>
+				<precondition>z_npc_loot_buy.dlg_can_bulk</precondition>
+				<script_text>z_npc_loot_buy.dlg_bulk_label</script_text>
+				<action>z_npc_loot_buy.dlg_bulk_buy</action>
 				<next>1</next>
 			</phrase>
 			<phrase id="199">

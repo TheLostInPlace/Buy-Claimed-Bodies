@@ -13,6 +13,11 @@ When an NPC kills another NPC it claims the body. Instead of only being warned o
 * Per faction seller personalities with a post Soviet, Ukrainian leaning tone (loners, bandits, Duty, Freedom, Clear Sky, mercs, military, ecologists, Monolith, renegades, Sin, UNISG)
 * Corpse labels: claimed bodies read "(Claimed)", bought bodies "(Bought)", free looted bodies "(Stolen)"
 * PDA notifications with the seller's name and face, so you know who to find
+* Bought bodies are marked with an X on the PDA map and minimap so you can find them, even one bought from a killer while the body lies across the map. The mark clears when you loot it
+* Buy all: when a killer has claimed several bodies, the talk menu offers a single option to buy the lot at once, at a small bundle discount
+* Claims expire: a claimed body left untouched long enough becomes free to loot again as the NPC loses interest
+* No deals mid-combat: a seller in a firefight or downed will not stop to deal, wait until it is over
+* Despawned bodies are cleaned up, so stale claims, prices and map marks do not pile up
 * Optional: make NPCs respect claims too, so an NPC will not loot a body that a different NPC killed (off by default, needs More Aggressive NPC Looting)
 * Russian localization included
 * Fully configurable through MCM
@@ -48,7 +53,7 @@ Optional "take it anyway" play, both off by default:
 * Loot for free when the claimer is too far to stop you
 * Free looting can alert the faction, with a configurable chance to turn nearby members hostile
 
-Everything (base and minimum price, rank, mutant and map danger weights, reputation influence, random spread, refuse to sell threshold, deal range, free loot and alert options, interaction mode, PDA notifications, master switch) is configurable in MCM under "Loot Claim Buyout".
+Everything (base and minimum price, rank, mutant and map danger weights, reputation influence, random spread, refuse to sell threshold, deal range, free loot and alert options, haggling, shady betrayal, no deals mid-combat, bulk buyout, claim expiry and its lifetime, map marks, interaction mode, PDA notifications, master switch) is configurable in MCM under "Loot Claim Buyout".
 
 ## Compatibility
 

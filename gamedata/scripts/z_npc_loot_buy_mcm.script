@@ -29,8 +29,14 @@ local defaults = {
 	shady_betray      = true,  -- shady factions may shove you off instead of dealing
 	shady_betray_chance = 0.12, -- base chance a shady seller betrays the deal
 	shady_melee_power = 0.01,  -- shove damage, kept tiny, just enough to trigger the hit shake
+	no_combat_deals   = true,  -- a seller in a firefight will not stop to deal
+	claim_expiry      = true,  -- claims age out so a body left alone becomes free to loot
+	claim_expiry_hours = 6,    -- in game hours before an untouched claim expires
+	bulk_enable       = true,  -- offer a buy all option when a seller has several bodies
+	bulk_discount     = 0.10,  -- price cut for buying every body at once, hidden tunable
 	npc_respect_claims = false, -- NPCs will not loot a body claimed by a different NPC
 	npc_owner_loots    = true,  -- the claiming NPC may still loot its own kill
+	map_mark          = true,  -- mark a bought body with an X on the pda map and minimap
 	pda_notify        = true,  -- show buy, steal and interact messages as PDA notifications
 	debug             = false, -- write diagnostics to appdata\logs\npc_loot_buy_dbg.log
 }
@@ -43,15 +49,20 @@ function get_config(key)
 end
 
 function on_mcm_load()
+	local hdr = { 255, 240, 205, 120 }  -- warm gold for the section headers
 	local op = {
 		id = "npc_loot_buy", sh = true, gr = {
 			{ id = "desc1", type = "desc", text = "ui_mcm_npc_loot_buy_desc1" },
+
+			{ id = "hdr_general", type = "title", text = "ui_mcm_npc_loot_buy_hdr_general", align = "c", clr = hdr },
 			{ id = "enable", type = "check", val = 1, def = true },
 			{ id = "interact_mode", type = "radio_h", val = 2, def = 0, content = {
 				{ 0, "npc_loot_buy_at_body" },
 				{ 1, "npc_loot_buy_at_npc" },
 			} },
 
+			{ id = "ln_pricing", type = "line" },
+			{ id = "hdr_pricing", type = "title", text = "ui_mcm_npc_loot_buy_hdr_pricing", align = "c", clr = hdr },
 			{ id = "base_price",      type = "track", val = 2, min = 0,      max = 50000, step = 100, def = 2500 },
 			{ id = "min_price",       type = "track", val = 2, min = 0,      max = 10000, step = 50,  def = 100 },
 			{ id = "rank_weight",     type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
@@ -63,9 +74,24 @@ function on_mcm_load()
 			{ id = "player_rank_enable", type = "check", val = 1, def = false },
 			{ id = "player_rank_weight", type = "track", val = 2, min = 0, max = 3, step = 0.1, def = 1.0 },
 			{ id = "random_spread",   type = "track", val = 2, min = 0,      max = 0.5,   step = 0.05, def = 0.15 },
-			{ id = "enemy_threshold", type = "track", val = 2, min = -10000, max = 0,     step = 250, def = -1000 },
-			{ id = "max_dist",        type = "track", val = 2, min = 5,      max = 50,    step = 1,   def = 25 },
 
+			{ id = "ln_buying", type = "line" },
+			{ id = "hdr_buying", type = "title", text = "ui_mcm_npc_loot_buy_hdr_buying", align = "c", clr = hdr },
+			{ id = "max_dist",        type = "track", val = 2, min = 5,      max = 50,    step = 1,   def = 25 },
+			{ id = "enemy_threshold", type = "track", val = 2, min = -10000, max = 0,     step = 250, def = -1000 },
+			{ id = "no_combat_deals",   type = "check", val = 1, def = true },
+			{ id = "claim_expiry",      type = "check", val = 1, def = true },
+			{ id = "claim_expiry_hours", type = "track", val = 2, min = 1, max = 48, step = 1, def = 6 },
+			{ id = "haggle_enable",     type = "check", val = 1, def = true },
+			{ id = "bulk_enable",       type = "check", val = 1, def = true },
+
+			{ id = "ln_shady", type = "line" },
+			{ id = "hdr_shady", type = "title", text = "ui_mcm_npc_loot_buy_hdr_shady", align = "c", clr = hdr },
+			{ id = "shady_betray",      type = "check", val = 1, def = true },
+			{ id = "shady_betray_chance", type = "track", val = 2, min = 0, max = 0.5, step = 0.02, def = 0.12 },
+
+			{ id = "ln_stealing", type = "line" },
+			{ id = "hdr_stealing", type = "title", text = "ui_mcm_npc_loot_buy_hdr_stealing", align = "c", clr = hdr },
 			{ id = "loot_when_far",     type = "check", val = 1, def = false },
 			{ id = "alert_on_far_loot", type = "check", val = 1, def = false },
 			{ id = "alert_chance",      type = "track", val = 2, min = 0, max = 1,   step = 0.05, def = 0.5 },
@@ -73,13 +99,14 @@ function on_mcm_load()
 			{ id = "steal_consequences",   type = "check", val = 1, def = true },
 			{ id = "steal_goodwill_penalty", type = "track", val = 2, min = 0, max = 2000, step = 50, def = 300 },
 
-			{ id = "haggle_enable",     type = "check", val = 1, def = true },
-			{ id = "shady_betray",      type = "check", val = 1, def = true },
-			{ id = "shady_betray_chance", type = "track", val = 2, min = 0, max = 0.5, step = 0.02, def = 0.12 },
-
+			{ id = "ln_npc", type = "line" },
+			{ id = "hdr_npc", type = "title", text = "ui_mcm_npc_loot_buy_hdr_npc", align = "c", clr = hdr },
 			{ id = "npc_respect_claims", type = "check", val = 1, def = false },
 			{ id = "npc_owner_loots",    type = "check", val = 1, def = true },
 
+			{ id = "ln_interface", type = "line" },
+			{ id = "hdr_interface", type = "title", text = "ui_mcm_npc_loot_buy_hdr_interface", align = "c", clr = hdr },
+			{ id = "map_mark",          type = "check", val = 1, def = true },
 			{ id = "pda_notify",        type = "check", val = 1, def = true },
 			{ id = "debug",             type = "check", val = 1, def = false },
 		}
