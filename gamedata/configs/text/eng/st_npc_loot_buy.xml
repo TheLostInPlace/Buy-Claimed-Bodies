@@ -447,6 +447,25 @@
 		<text>How strongly your rank moves the price. At 1.0 a rookie pays about 20% more and a legend about 45% less, 0 ignores your rank.</text>
 	</string>
 
+	<string id="ui_mcm_npc_loot_buy_loot_weight">
+		<text>Loot value weight</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_loot_weight_desc">
+		<text>How much the gear on a body raises its price, on top of the rank price. A good weapon (a green barrel is the prize) and any artifact add a premium. 0 turns loot pricing off. Weapon part values need Weapon Parts Overhaul, which GAMMA has.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_barrel_weight">
+		<text>Weapon parts weight</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_barrel_weight_desc">
+		<text>How much a weapon's part quality counts toward the price, driven mostly by the barrel since it is the dearest part. A green barrel is worth more than the rest of the gun, a busted one is worth nothing.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_artifact_weight">
+		<text>Artifact weight</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_artifact_weight_desc">
+		<text>How much an artifact carried on the body counts toward the price. Artifacts are the one thing still worth real coin, so they push the price up hard.</text>
+	</string>
+
 	<string id="ui_mcm_npc_loot_buy_random_spread">
 		<text>Random spread</text>
 	</string>

@@ -139,16 +139,21 @@ local LEVEL_DANGER = {
 local MCM_DEFAULTS = {
 	enable          = true,
 	interact_mode   = 0,
-	base_price      = 2500,
-	min_price       = 100,
+	base_price      = 2000,
+	min_price       = 300,
 	rank_weight     = 1.0,
 	mutant_weight   = 1.0,
 	location_weight = 1.0,
 	location_humans = false,
 	rep_divisor     = 2000,
-	rep_cap         = 0.5,
+	rep_cap         = 0.4,
 	player_rank_enable = false,
 	player_rank_weight = 1.0,
+	loot_weight     = 1.0,     -- gear value premium, on by default, 0 turns it off
+	barrel_weight   = 1.0,     -- how much weapon part quality (the barrel) counts
+	artifact_weight = 1.0,     -- how much a carried artifact counts
+	loot_baseline   = 12000,   -- gear worth that maps to a doubling at weight 1, hidden
+	loot_cap        = 2.5,     -- most the gear premium can multiply the price, hidden
 	random_spread   = 0.15,
 	enemy_threshold = -1000,
 	max_dist        = 25,
@@ -163,7 +168,7 @@ local MCM_DEFAULTS = {
 	haggle_penalty    = 0.10,
 	haggle_base       = 0.4,
 	shady_betray      = true,
-	shady_betray_chance = 0.12,
+	shady_betray_chance = 0.10,
 	shady_melee_power = 0.01,
 	no_combat_deals   = true,
 	claim_expiry      = true,
@@ -392,6 +397,66 @@ local function player_rank_factor()
 	return math.max(0.3, 1 + bonus * w)
 end
 
+-- loot value pricing. in GAMMA a weapon is worth its parts (price x condition,
+-- so a green barrel is the jackpot and a busted one is worthless), and artifacts
+-- are worth their cost. read once at death while the body is online and stored,
+-- so an offline body still prices right. all three off by default via loot_weight
+
+local PART_PRICE = {}  -- part section -> base price, from WPO part_prices.ltx
+local function load_part_prices()
+	local ok, ini = pcall(ini_file, "items\\settings\\part_prices.ltx")
+	if not (ok and ini and ini.section_exist and ini:section_exist("wpo_part_prices")) then
+		dlog("loot: part_prices.ltx absent, weapon part valuation off")
+		return
+	end
+	local n = ini:line_count("wpo_part_prices") or 0
+	for i = 0, n - 1 do
+		local _, sec, val = ini:r_line("wpo_part_prices", i, "", "")
+		if sec and sec ~= "" then PART_PRICE[sec] = tonumber(val) or 0 end
+	end
+	dlog("loot: loaded %s part prices", tostring(n))
+end
+
+-- sum a corpse's gear worth: weapon parts (price x condition) plus artifact cost.
+-- returns parts_value, artifact_value. weapon parts need WPO item_parts present
+local function compute_kit(victim)
+	local parts_v, arts_v = 0, 0
+	if not (victim and victim.iterate_inventory) then return 0, 0 end
+	local have_parts = item_parts and item_parts.get_parts_con
+	victim:iterate_inventory(function(owner, item)
+		if not item then return end
+		if IsArtefact and IsArtefact(item) then
+			arts_v = arts_v + ((item.cost and item:cost()) or 0)
+		elseif have_parts and IsWeapon and IsWeapon(item) then
+			local pc = item_parts.get_parts_con(item, nil, true)
+			if pc then
+				for part, con in pairs(pc) do
+					local base = PART_PRICE[part]
+					if base then parts_v = parts_v + base * (tonumber(con) or 0) end
+				end
+			end
+		end
+	end, victim)
+	return parts_v, arts_v
+end
+
+-- gear premium on top of the rank price, from the stored kit values and the three
+-- weights. 1.0 when loot pricing is off or the body carried nothing of worth
+local function loot_factor(vid)
+	local lw = tonumber(get_cfg("loot_weight")) or 0
+	if lw <= 0 then return 1.0 end
+	local info = victim_info[vid]
+	if not info then return 1.0 end
+	local bw = tonumber(get_cfg("barrel_weight")) or 1.0
+	local aw = tonumber(get_cfg("artifact_weight")) or 1.0
+	local kit = (info.kit_parts or 0) * bw + (info.kit_arts or 0) * aw
+	if kit <= 0 then return 1.0 end
+	local baseline = tonumber(get_cfg("loot_baseline")) or 12000
+	if baseline <= 0 then baseline = 12000 end
+	local cap = tonumber(get_cfg("loot_cap")) or 2.5
+	return clamp(1 + lw * (kit / baseline), 1.0, cap)
+end
+
 -- victim_obj may be nil for an offline body, then it falls back to victim_info
 local function compute_price(vid, victim_obj, seller)
 	if price_cache[vid] then return price_cache[vid] end
@@ -436,12 +501,13 @@ local function compute_price(vid, victim_obj, seller)
 	local seller_comm = character_community(seller)
 	local rep = rep_factor(seller_comm)
 	local pr = player_rank_factor()
+	local lootf = loot_factor(vid)
 	local jitter = 1 + (math.random() * 2 - 1) * spread
 
-	local raw = base * diff_factor * rep * pr * jitter
+	local raw = base * diff_factor * rep * pr * lootf * jitter
 	local price = math.floor(math.max(raw, minp) + 0.5)
-	dlog("price vid %s: base=%s diff=%.2f rep=%.2f prank=%.2f jit=%.2f raw=%d -> %d (min %s)",
-		tostring(vid), tostring(base), diff_factor, rep, pr, jitter, math.floor(raw), price, tostring(minp))
+	dlog("price vid %s: base=%s diff=%.2f rep=%.2f prank=%.2f loot=%.2f jit=%.2f raw=%d -> %d (min %s)",
+		tostring(vid), tostring(base), diff_factor, rep, pr, lootf, jitter, math.floor(raw), price, tostring(minp))
 
 	price_cache[vid] = price
 	return price
@@ -1118,6 +1184,11 @@ function on_npc_death(victim, killer)
 		rec.rname = victim.rank_name and victim:rank_name() or nil
 		rec.rnum  = (victim.character_rank and victim:character_rank()) or 0
 	end
+	-- value the gear now while the body is online, only if loot pricing is on
+	if (tonumber(get_cfg("loot_weight")) or 0) > 0 then
+		rec.kit_parts, rec.kit_arts = compute_kit(victim)
+		dlog("loot: body %s kit parts=%s arts=%s", tostring(vid), tostring(rec.kit_parts), tostring(rec.kit_arts))
+	end
 	victim_info[vid] = rec
 	dlog("CLAIM recorded: corpse %s <- killer %s (%s)", tostring(vid), tostring(kid), tostring(kcomm))
 
@@ -1243,6 +1314,7 @@ function on_game_start()
 	RegisterScriptCallback("monster_on_actor_use_callback", on_body_used)
 	RegisterScriptCallback("actor_on_update", maintenance_tick)
 	RegisterScriptCallback("save_state", save_state)
+	load_part_prices()
 	RegisterScriptCallback("load_state", load_state)
 	dlog("on_game_start complete, dot marks present: %s", tostring(ui_hud_dotmarks ~= nil))
 end

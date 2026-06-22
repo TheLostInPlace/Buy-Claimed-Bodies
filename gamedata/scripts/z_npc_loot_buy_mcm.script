@@ -3,16 +3,21 @@
 local defaults = {
 	enable          = true,    -- master switch for the buy feature
 	interact_mode   = 0,       -- 0 is prompt at the body, 1 is talk to the killer NPC
-	base_price      = 2500,    -- baseline RU before modifiers
-	min_price       = 100,     -- price floor
+	base_price      = 2000,    -- baseline RU before modifiers
+	min_price       = 300,     -- price floor
 	rank_weight     = 1.0,     -- how strongly a human body's rank scales price, 0 ignores it
 	mutant_weight   = 1.0,     -- how strongly a mutant's difficulty scales price, 0 ignores it
 	location_weight = 1.0,     -- how strongly the kill's map danger scales price, 0 ignores it
 	location_humans = false,   -- also apply map danger to human bodies, not just mutants
 	rep_divisor     = 2000,    -- larger means your reputation matters less to the price
-	rep_cap         = 0.5,     -- max discount or surcharge from reputation, 0.5 is plus or minus 50%
+	rep_cap         = 0.4,     -- max discount or surcharge from reputation, 0.4 is plus or minus 40%
 	player_rank_enable = false, -- your own rank affects price, rookies pay more, veterans pay less
 	player_rank_weight = 1.0,  -- how strongly your rank moves the price, 0 ignores it
+	loot_weight     = 1.0,     -- gear on the body raises price, on by default, 0 turns it off
+	barrel_weight   = 1.0,     -- how much a weapon's part quality (the barrel) counts
+	artifact_weight = 1.0,     -- how much a carried artifact counts
+	loot_baseline   = 12000,   -- gear worth that doubles the price at weight 1, hidden tunable
+	loot_cap        = 2.5,     -- most the gear premium can multiply the price, hidden tunable
 	random_spread   = 0.15,    -- random jitter on the final price, 0.15 is plus or minus 15%
 	enemy_threshold = -1000,   -- at or below this faction goodwill they refuse to sell
 	max_dist        = 25,      -- how close the claiming NPC must be to deal, in meters
@@ -27,7 +32,7 @@ local defaults = {
 	haggle_penalty    = 0.10,  -- price rise when a haggle offends the seller, hidden tunable
 	haggle_base       = 0.4,   -- base haggle success chance before rank and standing, hidden
 	shady_betray      = true,  -- shady factions may shove you off instead of dealing
-	shady_betray_chance = 0.12, -- base chance a shady seller betrays the deal
+	shady_betray_chance = 0.10, -- base chance a shady seller betrays the deal
 	shady_melee_power = 0.01,  -- shove damage, kept tiny, just enough to trigger the hit shake
 	no_combat_deals   = true,  -- a seller in a firefight will not stop to deal
 	claim_expiry      = true,  -- claims age out so a body left alone becomes free to loot
@@ -63,16 +68,19 @@ function on_mcm_load()
 
 			{ id = "ln_pricing", type = "line" },
 			{ id = "hdr_pricing", type = "title", text = "ui_mcm_npc_loot_buy_hdr_pricing", align = "c", clr = hdr },
-			{ id = "base_price",      type = "track", val = 2, min = 0,      max = 50000, step = 100, def = 2500 },
-			{ id = "min_price",       type = "track", val = 2, min = 0,      max = 10000, step = 50,  def = 100 },
+			{ id = "base_price",      type = "track", val = 2, min = 0,      max = 50000, step = 100, def = 2000 },
+			{ id = "min_price",       type = "track", val = 2, min = 0,      max = 10000, step = 50,  def = 300 },
 			{ id = "rank_weight",     type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
 			{ id = "mutant_weight",   type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
 			{ id = "location_weight", type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
 			{ id = "location_humans", type = "check", val = 1, def = false },
 			{ id = "rep_divisor",     type = "track", val = 2, min = 100,    max = 10000, step = 100, def = 2000 },
-			{ id = "rep_cap",         type = "track", val = 2, min = 0,      max = 0.9,   step = 0.05, def = 0.5 },
+			{ id = "rep_cap",         type = "track", val = 2, min = 0,      max = 0.9,   step = 0.05, def = 0.4 },
 			{ id = "player_rank_enable", type = "check", val = 1, def = false },
 			{ id = "player_rank_weight", type = "track", val = 2, min = 0, max = 3, step = 0.1, def = 1.0 },
+			{ id = "loot_weight",     type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
+			{ id = "barrel_weight",   type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
+			{ id = "artifact_weight", type = "track", val = 2, min = 0,      max = 3,     step = 0.1, def = 1.0 },
 			{ id = "random_spread",   type = "track", val = 2, min = 0,      max = 0.5,   step = 0.05, def = 0.15 },
 
 			{ id = "ln_buying", type = "line" },
@@ -88,7 +96,7 @@ function on_mcm_load()
 			{ id = "ln_shady", type = "line" },
 			{ id = "hdr_shady", type = "title", text = "ui_mcm_npc_loot_buy_hdr_shady", align = "c", clr = hdr },
 			{ id = "shady_betray",      type = "check", val = 1, def = true },
-			{ id = "shady_betray_chance", type = "track", val = 2, min = 0, max = 0.5, step = 0.02, def = 0.12 },
+			{ id = "shady_betray_chance", type = "track", val = 2, min = 0, max = 0.5, step = 0.02, def = 0.10 },
 
 			{ id = "ln_stealing", type = "line" },
 			{ id = "hdr_stealing", type = "title", text = "ui_mcm_npc_loot_buy_hdr_stealing", align = "c", clr = hdr },

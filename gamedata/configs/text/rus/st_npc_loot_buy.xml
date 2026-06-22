@@ -573,4 +573,22 @@
 	<string id="ui_mcm_npc_loot_buy_hdr_interface">
 		<text>- Интерфейс и уведомления -</text>
 	</string>
+	<string id="ui_mcm_npc_loot_buy_loot_weight">
+		<text>Вес ценности добычи</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_loot_weight_desc">
+		<text>Насколько снаряжение на теле поднимает цену сверх цены за ранг. Хорошее оружие (зелёный ствол это приз) и любой артефакт дают надбавку. 0 отключает учёт добычи. Стоимость частей оружия требует Weapon Parts Overhaul, он есть в GAMMA.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_barrel_weight">
+		<text>Вес частей оружия</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_barrel_weight_desc">
+		<text>Насколько качество частей оружия влияет на цену, в основном за счёт ствола, самой дорогой части. Зелёный ствол стоит дороже остального оружия, убитый не стоит ничего.</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_artifact_weight">
+		<text>Вес артефакта</text>
+	</string>
+	<string id="ui_mcm_npc_loot_buy_artifact_weight_desc">
+		<text>Насколько артефакт на теле влияет на цену. Артефакты единственное, что ещё стоит реальных денег, поэтому они сильно поднимают цену.</text>
+	</string>
 </string_table>

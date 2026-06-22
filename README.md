@@ -48,6 +48,12 @@ price = base x difficulty tier x map danger x reputation factor x random jitter
 * The random jitter is rolled once per body and cached, so it cannot be save scummed
 * Hostile factions refuse to sell and keep the original warning behaviour
 
+Optional loot value pricing (off by default, set the loot value weight above 0):
+
+* A body's gear adds a premium on top of the rank price. Weapons are valued the GAMMA way, by their parts times condition, so a green barrel is the prize and a busted weapon is worth nothing. Artifacts are valued by their cost, the one thing still worth real coin
+* Separate weights for the weapon parts (barrel) and for artifacts, so you tune what matters
+* Read once at the kill while the body is online, so it still prices right when you buy it offline from the killer. Weapon part values use Weapon Parts Overhaul, which GAMMA ships
+
 Optional "take it anyway" play, both off by default:
 
 * Loot for free when the claimer is too far to stop you

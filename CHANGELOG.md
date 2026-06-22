@@ -1,0 +1,50 @@
+# Changelog
+
+## 1.0.4
+
+## Added
+* Optional loot value pricing: a body's gear adds a premium on top of the rank price. Weapons are valued the GAMMA way, by their parts times condition, so a green barrel is the prize and a busted weapon is worth nothing. Artifacts are valued by their cost. Separate weights for the weapon parts and for artifacts, read once at the kill so an offline body still prices right. On by default, set the loot value weight to 0 to turn it off.
+
+## Changed
+* Rebalanced the default prices for GAMMA: base price 2500 to 2000, minimum price 100 to 300, reputation discount and surcharge capped at 40% instead of 50%, and shady betrayal chance lowered from 12% to 10%.
+
+## 1.0.3
+
+## Added
+* Bought bodies are marked with an X on the PDA map and the minimap, so you can find what you paid for. It works even when you buy from a killer while the body lies across the map, and the mark clears once you loot the body. Has a toggle.
+* Buy all: when a killer has claimed several bodies, the talk menu offers a single option to buy the lot at once, at a small bundle discount.
+* Claims expire: a claimed body left untouched long enough becomes free to loot again, as the NPC loses interest. The lifetime is configurable.
+* No deals mid combat: a seller who is in a firefight or downed will not stop to deal. Wait until the fighting is over.
+
+## Changed
+* The MCM page is organized into labelled sections (General, Pricing, Buying and claims, Shady sellers, Stealing, NPCs respecting claims, Interface) instead of one long list.
+
+## Fixed
+* When a body despawns, its claim, cached price and map mark are now cleared, so stale entries no longer pile up.
+
+## 1.0.2
+
+## Added
+* Talk to the killer now shows a list of every body that NPC has claimed (name, rank, price). Pick one to buy and the menu loops back, so you can buy several without reopening it.
+* Haggling: try to talk the price down, once per body. Your rank and standing with the faction improve the odds, and a failed attempt offends the seller and raises the price. Works in both the talk to killer menu and at the body.
+* Optional player rank pricing: your own rank affects the price. A rookie gets bullied and pays more, a veteran or higher is respected and pays less. Has its own toggle and a weight.
+* Stealing has consequences: free looting a claimed body lowers your goodwill with that faction. Steal enough of their kills and they stop dealing with you.
+* Shady seller betrayal: bandits, renegades, mercs and Sin may shove you off and refuse the deal instead of selling, with a per faction message telling you to leave. They do not turn hostile and take no money.
+* Optional "NPCs respect claims": an NPC will not loot a body that a different NPC killed, with an owner can loot its kill sub toggle. Needs More Aggressive NPC Looting.
+
+## Fixed
+* At the body, clicking buy without enough coin now shows a clear popup instead of a silent PDA line. The PDA copy is sent only when PDA notifications are on.
+* The claim warning that printed two to four times per tap now fires once.
+
+## 1.0.0
+
+## Added
+* Buy a body from the NPC who claimed it, instead of only being warned off it.
+* Standalone: records its own claims when an NPC makes a kill and blocks looting of claimed bodies, so it works with no base loot claim mod installed.
+* Dynamic pricing by the victim's rank, the claiming faction's opinion of you, and a small random factor.
+* Mutant bodies priced by difficulty tier and where they died (map danger).
+* Two interaction modes: a buy prompt at the body, or talk to the killer to deal.
+* Per faction seller personalities with a post Soviet, Ukrainian leaning tone.
+* Free loot a kill when the claimer is too far to stop you, optionally alerting the faction to turn nearby members hostile.
+* Hostile factions refuse to deal and keep the original warn off behaviour.
+* Fully configurable through MCM, with Russian localization included.
