@@ -715,14 +715,24 @@ local function open_confirm(text, on_yes)
 	GUI:ShowConfirm(text, on_yes)
 end
 
--- open the loot window next tick, after the confirm popup has closed, so we are
--- not opening one UI from inside another's callback
+-- open the loot or skin window next tick, after the confirm popup has closed, so
+-- we are not opening one UI from inside another's callback. mutants go through the
+-- mutant skin handler, humans through the inventory loot, opening the human loot
+-- on a mutant crashes ui_inventory UpdateCharacter
 local function open_loot_deferred(obj)
-	if not (obj and base_ui_start) then return end
+	if not obj then return end
 	local oid = obj:id()
+	local is_mut = IsMonster(obj)
 	CreateTimeEvent("npc_loot_buy_steal", "open_" .. tostring(oid), 0, function()
 		local o = level.object_by_id(oid)
-		if o and base_ui_start then base_ui_start("loot", o) end
+		if o then
+			dlog("steal open: body %s mutant=%s", tostring(oid), tostring(is_mut))
+			if is_mut then
+				if base_mutant_start then base_mutant_start(o) end
+			elseif base_ui_start then
+				base_ui_start("loot", o)
+			end
+		end
 		return true
 	end)
 end

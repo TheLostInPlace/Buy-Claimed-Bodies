@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.6 [BETA]
+
+## Fixed
+* Fixed a crash when stealing a claimed mutant with the confirm popup on. Pressing yes opened the human loot window on the mutant, and the game crashed trying to read its money. Mutants now go through the normal skin handler.
+
 ## 1.0.5 [BETA]
 
 ## Added
