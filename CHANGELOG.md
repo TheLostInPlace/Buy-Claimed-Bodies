@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.7 [BETA]
+
+## Changed
+* Hardened the loot window handling. All body loot now opens through a single router that picks the mutant skin screen or the human inventory by body type, so the human and mutant split has one enforcement point and the 1.0.6 fix cannot be bypassed by future code. No change in behavior.
+
 ## 1.0.6 [BETA]
 
 ## Fixed
