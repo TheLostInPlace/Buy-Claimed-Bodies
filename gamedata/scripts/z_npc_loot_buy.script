@@ -715,23 +715,32 @@ local function open_confirm(text, on_yes)
 	GUI:ShowConfirm(text, on_yes)
 end
 
--- open the loot or skin window next tick, after the confirm popup has closed, so
--- we are not opening one UI from inside another's callback. mutants go through the
--- mutant skin handler, humans through the inventory loot, opening the human loot
--- on a mutant crashes ui_inventory UpdateCharacter
+-- the one place that opens a loot UI for a body. always route by body type: a
+-- mutant goes to its own skin/loot handler (take all, take parts, or the instant
+-- skin per the mutant loot settings), a human goes to the inventory loot. opening
+-- the human inventory on a mutant crashes ui_inventory UpdateCharacter, which reads
+-- money() the mutant does not have, so this split must never be bypassed
+local function open_body_loot(obj)
+	if not obj then return end
+	if IsMonster(obj) then
+		if base_mutant_start then base_mutant_start(obj)
+		else dlog("open_body_loot: mutant %s but no mutant handler", tostring(obj:id())) end
+	else
+		if base_ui_start then base_ui_start("loot", obj)
+		else dlog("open_body_loot: human %s but no inventory handler", tostring(obj:id())) end
+	end
+end
+
+-- open it next tick, after the confirm popup has closed, so we are not opening one
+-- UI from inside another's callback
 local function open_loot_deferred(obj)
 	if not obj then return end
 	local oid = obj:id()
-	local is_mut = IsMonster(obj)
 	CreateTimeEvent("npc_loot_buy_steal", "open_" .. tostring(oid), 0, function()
 		local o = level.object_by_id(oid)
 		if o then
-			dlog("steal open: body %s mutant=%s", tostring(oid), tostring(is_mut))
-			if is_mut then
-				if base_mutant_start then base_mutant_start(o) end
-			elseif base_ui_start then
-				base_ui_start("loot", o)
-			end
+			dlog("steal open: body %s mutant=%s", tostring(oid), tostring(IsMonster(o)))
+			open_body_loot(o)
 		end
 		return true
 	end)
