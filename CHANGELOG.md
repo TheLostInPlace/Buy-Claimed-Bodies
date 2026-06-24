@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.8 [BETA]
+
+## Fixed
+* Fixed Lua errors and log spam when opening a stash or looking at any non body object. The mod checked if the object was alive before confirming it was a stalker or mutant, and the alive check errors on stashes and other classes. It was noisy but never crashed.
+* Stopped the MCM "bad path" log spam from the hidden tunables (cached price lifetime and a few others). They now read from the defaults directly instead of asking the menu for an option that is not listed.
+
 ## 1.0.7 [BETA]
 
 ## Changed

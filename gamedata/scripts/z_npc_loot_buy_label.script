@@ -29,7 +29,9 @@ local function on_update()
 	if not (z_npc_loot_buy.is_enabled and z_npc_loot_buy.is_enabled()) then last_id = nil; return end
 
 	local obj = level.get_target_obj()
-	if not obj or obj:alive() or not (IsStalker(obj) or IsMonster(obj)) then last_id = nil; return end
+	-- type check before alive(): the crosshair is often on a non creature (stash,
+	-- item, door) and alive() errors on those classes
+	if not obj or not (IsStalker(obj) or IsMonster(obj)) or obj:alive() then last_id = nil; return end
 
 	local id = obj:id()
 	local suffix = z_npc_loot_buy.corpse_label_suffix(id)

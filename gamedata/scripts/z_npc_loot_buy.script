@@ -521,7 +521,7 @@ function has_live_claim(id)
 	local kid = claims[id]
 	if not kid or kid == AC_ID then return false end
 	local k = level.object_by_id(kid)
-	return (k ~= nil) and k:alive() and IsStalker(k)
+	return (k ~= nil) and IsStalker(k) and k:alive()
 end
 
 function is_enabled()
@@ -759,7 +759,7 @@ local function alert_faction(faction)
 	local radius = tonumber(get_cfg("alert_radius")) or 30
 	local hit = 0
 	level.iterate_nearest(actor:position(), radius, function(o)
-		if o and o:id() ~= AC_ID and o:alive() and IsStalker(o)
+		if o and o:id() ~= AC_ID and IsStalker(o) and o:alive()
 			and character_community(o) == faction then
 			o:force_set_goodwill(-5000, actor)
 			hit = hit + 1
@@ -795,15 +795,16 @@ end
 -- returns action ("block"/"buy"/"goto") + seller + id, or nil to allow looting
 local function decide_loot(obj)
 	if not get_cfg("enable") then return nil end
-	if obj:alive() then return nil end
+	-- type check first: alive() errors on non creatures like a stash inventory_box
 	if not (IsStalker(obj) or IsMonster(obj)) then return nil end
+	if obj:alive() then return nil end
 
 	local id = obj:id()
 	local kid = claim_killer(id)
 	if not kid then return nil end -- not claimed
 
 	local seller = level.object_by_id(kid)
-	if not (seller and seller:alive() and IsStalker(seller)) then return nil end -- owner gone
+	if not (seller and IsStalker(seller) and seller:alive()) then return nil end -- owner gone
 
 	local comm = character_community(seller)
 	if faction_refuses(comm) then dlog("loot %s: hostile faction, free loot", tostring(id)); return nil end
